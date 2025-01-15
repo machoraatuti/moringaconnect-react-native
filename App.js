@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Moringa Connect!</Text>
+      <Text style={styles.heading}>Moringa Connect!</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -18,4 +18,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  heading: {
+    fontSize: 20,
+    color: 'FFF5F2',
+
+  }
 });
