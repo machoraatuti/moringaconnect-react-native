@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "moringaconnect",
+    "slug": "moringaconnect",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
