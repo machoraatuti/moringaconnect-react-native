@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 20,
-    color: 'FFF5F2',
+    color: '#f05a28',
 
   }
 });
