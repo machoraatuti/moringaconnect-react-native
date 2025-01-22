@@ -4,16 +4,16 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions ,  Platform} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-//import { useDispatch, useSelector } from 'react-redux';
-//import { logoutUser } from '../Features/auth/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../features/authSlice/authSlice';
 import moringaLogo from "../assets/images/moringalogo.png";
 
 const CustomHeader = () => {
   const navigation = useNavigation();
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const windowWidth = Dimensions.get('window').width;
   const isLargeScreen = windowWidth >= 768;
- // const { isAdmin, isAuthenticated } = useSelector(state => state.auth);
+ const { isAdmin, isAuthenticated } = useSelector(state => state.auth);
 
   const handleSignOut = async () => {
     try {
