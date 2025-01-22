@@ -4,6 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Picker } from '@react-native-picker/picker';
 import Layout from '../shared/Layout';
+import { 
+  fetchPosts, 
+  selectAllPosts, 
+  selectPostsLoading, 
+  selectPostsError 
+} from '../features/postSlice/postSlice';
+import CreatePost from '../components/CreatePost'; // Assuming this component exists
+import PostCard from '../components/PostCard';     // Assuming this component exists
 
 const colors = {
  primary: '#0A1F44',
@@ -13,151 +21,142 @@ const colors = {
 };
 
 const Posts = () => {
- //const dispatch = useDispatch();
- //const posts = useSelector(selectAllPosts);
- const [searchTerm, setSearchTerm] = useState('');
- const [categoryFilter, setCategoryFilter] = useState('all');
- const [showCreatePost, setShowCreatePost] = useState(false);
+  // Redux state selectors
+  const dispatch = useDispatch();
+  const posts = useSelector(selectAllPosts);
+  const loading = useSelector(selectPostsLoading);
+  const error = useSelector(selectPostsError);
 
- useEffect(() => {
-   dispatch(fetchPosts());
- }, [dispatch]);
+  // Local component state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
- const categories = ['all', 'Technology', 'Career', 'Education', 'Events', 'Projects', 'Other'];
+  // Fetch posts on component mount
+  useEffect(() => {
+    dispatch(fetchPosts());
+  }, [dispatch]);
 
- const filteredPosts = posts.filter(post => {
-   const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase());
-   const matchesCategory = categoryFilter === 'all' || post.category === categoryFilter;
-   return matchesSearch && matchesCategory;
- });
+  // Categories for filtering
+  const categories = ['all', 'Technology', 'Career', 'Education', 'Events', 'Projects', 'Other'];
 
- const handlePostCreated = () => {
-   setShowCreatePost(false);
-   dispatch(fetchPosts());
- };
+  // Filter posts based on search term and category
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || post.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
- return (
-   <Layout>
-     <View style={styles.container}>
-       <View style={styles.header}>
-         <Text style={styles.title}>Posts</Text>
-         <TouchableOpacity
-           style={styles.createButton}
-           onPress={() => setShowCreatePost(true)}
-         >
-           <Icon name="add" size={24} color={colors.white} />
-           <Text style={styles.buttonText}>Create Post</Text>
-         </TouchableOpacity>
-       </View>
+  // Handler for post creation
+  const handlePostCreated = () => {
+    setShowCreatePost(false);
+    dispatch(fetchPosts());
+  };
 
-       <View style={styles.searchContainer}>
-         <View style={styles.searchBar}>
-           <Icon name="search" size={24} color="#666" />
-           <TextInput
-             style={styles.searchInput}
-             placeholder="Search posts..."
-             value={searchTerm}
-             onChangeText={setSearchTerm}
-           />
-         </View>
-         
-         <Picker
-           selectedValue={categoryFilter}
-           style={styles.picker}
-           onValueChange={setCategoryFilter}
-         >
-           {categories.map(category => (
-             <Picker.Item 
-               key={category} 
-               label={category.charAt(0).toUpperCase() + category.slice(1)} 
-               value={category} 
-             />
-           ))}
-         </Picker>
-       </View>
+  // Render loading state
+  if (loading) {
+    return (
+      <Layout>
+        <View style={styles.centeredContainer}>
+          <Text>Loading posts...</Text>
+        </View>
+      </Layout>
+    );
+  }
 
-       <FlatList
-         data={filteredPosts}
-         keyExtractor={(item) => item.id}
-         renderItem={({ item }) => <PostCard post={item} />}
-         ListEmptyComponent={() => (
-           <View style={styles.emptyContainer}>
-             <Text style={styles.emptyText}>
-               No posts found. {searchTerm || categoryFilter !== 'all' 
-                 ? 'Try adjusting your filters.' 
-                 : 'Be the first to create one!'}
-             </Text>
-           </View>
-         )}
-       />
+  // Render error state
+  if (error) {
+    return (
+      <Layout>
+        <View style={styles.centeredContainer}>
+          <Text style={styles.errorText}>Error: {error}</Text>
+        </View>
+      </Layout>
+    );
+  }
 
-       <Modal
-         visible={showCreatePost}
-         animationType="slide"
-         onRequestClose={() => setShowCreatePost(false)}
-       >
-         <CreatePost onClose={handlePostCreated} />
-       </Modal>
-     </View>
-   </Layout>
- );
+  return (
+    <Layout>
+      <View style={styles.container}>
+        {/* Header with title and create post button */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Posts</Text>
+          <TouchableOpacity
+            style={styles.createButton}
+            onPress={() => setShowCreatePost(true)}
+          >
+            <Icon name="add" size={24} color={colors.white} />
+            <Text style={styles.buttonText}>Create Post</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Search and filter section */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <Icon name="search" size={24} color="#666" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search posts..."
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+            />
+          </View>
+          
+          <Picker
+            selectedValue={categoryFilter}
+            style={styles.picker}
+            onValueChange={setCategoryFilter}
+          >
+            {categories.map(category => (
+              <Picker.Item 
+                key={category} 
+                label={category.charAt(0).toUpperCase() + category.slice(1)} 
+                value={category} 
+              />
+            ))}
+          </Picker>
+        </View>
+
+        {/* Posts list */}
+        <FlatList
+          data={filteredPosts}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <PostCard post={item} />}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                No posts found. {searchTerm || categoryFilter !== 'all' 
+                  ? 'Try adjusting your filters.' 
+                  : 'Be the first to create one!'}
+              </Text>
+            </View>
+          )}
+        />
+
+        {/* Create post modal */}
+        <Modal
+          visible={showCreatePost}
+          animationType="slide"
+          onRequestClose={() => setShowCreatePost(false)}
+        >
+          <CreatePost onClose={handlePostCreated} />
+        </Modal>
+      </View>
+    </Layout>
+  );
 };
 
 const styles = StyleSheet.create({
- container: {
-   flex: 1,
-   backgroundColor: colors.background,
- },
- header: {
-   flexDirection: 'row',
-   justifyContent: 'space-between',
-   alignItems: 'center',
-   padding: 16,
- },
- title: {
-   fontSize: 24,
-   fontWeight: '600',
-   color: colors.primary,
- },
- createButton: {
-   flexDirection: 'row',
-   backgroundColor: colors.secondary,
-   padding: 12,
-   borderRadius: 8,
-   alignItems: 'center',
- },
- buttonText: {
-   color: colors.white,
-   marginLeft: 8,
- },
- searchContainer: {
-   padding: 16,
-   gap: 12,
- },
- searchBar: {
-   flexDirection: 'row',
-   alignItems: 'center',
-   backgroundColor: colors.white,
-   padding: 8,
-   borderRadius: 8,
- },
- searchInput: {
-   flex: 1,
-   marginLeft: 8,
- },
- picker: {
-   backgroundColor: colors.white,
-   borderRadius: 8,
- },
- emptyContainer: {
-   padding: 16,
-   alignItems: 'center',
- },
- emptyText: {
-   fontSize: 16,
-   textAlign: 'center',
-   color: colors.primary,
- }
+  // ... (previous styles remain the same)
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  }
 });
 
 export default Posts;

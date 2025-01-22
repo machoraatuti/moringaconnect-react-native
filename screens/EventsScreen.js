@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-//import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
  View,
  Text,
@@ -11,6 +11,11 @@ import {
  ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { fetchEvents, 
+  selectAllEvents, 
+  selectEventsLoading, 
+  selectEventsError  } from '../features/eventSlice/eventSlice';
+
 import Layout from '../shared/Layout';
 
 const colors = {
@@ -34,11 +39,10 @@ const getStatusColor = (status) => {
 };
 
 const UserEvents = () => {
- const dispatch = useDispatch();
- const events = useSelector(selectAllEvents);
- const loading = useSelector(selectEventsLoading);
- const error = useSelector(selectEventsError);
- const [selectedEvent, setSelectedEvent] = useState(null);
+  const dispatch = useDispatch();
+  const events = useSelector(selectAllEvents);  // Correctly selects events
+  const loading = useSelector(selectEventsLoading);
+  const error = useSelector(selectEventsError);
 
  useEffect(() => {
    dispatch(fetchEvents());

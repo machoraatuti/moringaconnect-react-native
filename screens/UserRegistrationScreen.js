@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-//import { loginUser, registerUser, clearError } from '../Features/auth/authSlice';
+import { loginUser, registerUser, clearError } from '../features/authSlice/authSlice';
 
 const colors = {
  primary: "#0A1F44", 
