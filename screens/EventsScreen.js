@@ -43,6 +43,7 @@ const UserEvents = () => {
   const events = useSelector(selectAllEvents);  // Correctly selects events
   const loading = useSelector(selectEventsLoading);
   const error = useSelector(selectEventsError);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
  useEffect(() => {
    dispatch(fetchEvents());
