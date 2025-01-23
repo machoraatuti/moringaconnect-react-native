@@ -7,7 +7,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost } from '../redux/slices/postSlice';
+import { createPost } from '../features/postSlice/postSlice';
 import { baseUrl } from '../shared/baseUrl';
 
 const colors = {
