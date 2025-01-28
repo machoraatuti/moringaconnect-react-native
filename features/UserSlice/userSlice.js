@@ -2,152 +2,214 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { baseUrl } from '../../shared/baseUrl';
 
+const initialState = {
+  users: [],
+  onlineUsers: {},
+  isLoading: false,
+  error: null,
+  lastUpdated: null
+};
+
+const authHeaders = (getState) => ({
+  Authorization: `Bearer ${getState().auth.token}`
+});
+
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch(baseUrl + 'users');
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
-      }
-      return await response.json();
-    } catch (error) {
-      return rejectWithValue({
-        message: error.message,
-        statusCode: error.response?.status
-      });
-    }
-  }
-);
-
-export const updateUserStatus = createAsyncThunk(
-  'users/updateStatus',
-  async ({ userId, isOnline }, { rejectWithValue }) => {
-    try {
-      const response = await fetch(baseUrl + `users/${userId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ isOnline })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update user status');
-      }
-      const data = await response.json();
-      return { userId, isOnline, ...data };
-    } catch (error) {
-      return rejectWithValue({
-        message: error.message,
-        statusCode: error.response?.status
-      });
-    }
-  }
-);
-
-export const addUser = createAsyncThunk(
-  'users/addUser',
-  async (userData, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     try {
       const response = await fetch(baseUrl + 'users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(userData)
+        headers: authHeaders(getState)
       });
-      if (!response.ok) {
-        throw new Error('Failed to add user');
-      }
-      return await response.json();
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch users');
+      return data;
     } catch (error) {
-      return rejectWithValue({
-        message: error.message,
-        statusCode: error.response?.status
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const createUser = createAsyncThunk(
+  'users/createUser',
+  async (userData, { getState, rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      Object.entries(userData).forEach(([key, value]) => {
+        if (key === 'avatar' && value) {
+          formData.append(key, {
+            uri: value,
+            type: 'image/jpeg',
+            name: 'avatar.jpg'
+          });
+        } else {
+          formData.append(key, value);
+        }
       });
+
+      const response = await fetch(baseUrl + 'users', {
+        method: 'POST',
+        headers: authHeaders(getState),
+        body: formData
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to create user');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  'users/updateUser',
+  async ({ id, ...userData }, { getState, rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      Object.entries(userData).forEach(([key, value]) => {
+        if (key === 'avatar' && value?.startsWith('file://')) {
+          formData.append(key, {
+            uri: value,
+            type: 'image/jpeg',
+            name: 'avatar.jpg'
+          });
+        } else {
+          formData.append(key, value);
+        }
+      });
+
+      const response = await fetch(baseUrl + `users/${id}`, {
+        method: 'PUT',
+        headers: authHeaders(getState),
+        body: formData
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update user');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const deleteUser = createAsyncThunk(
   'users/deleteUser',
-  async (userId, { rejectWithValue }) => {
+  async (userId, { getState, rejectWithValue }) => {
     try {
       const response = await fetch(baseUrl + `users/${userId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: authHeaders(getState)
       });
+
       if (!response.ok) {
-        throw new Error('Failed to delete user');
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete user');
       }
       return userId;
     } catch (error) {
-      return rejectWithValue({
-        message: error.message,
-        statusCode: error.response?.status
-      });
+      return rejectWithValue(error.message);
     }
   }
 );
 
-const initialState = {
-  users: [],
-  onlineUsers: {},
-  isLoading: false,
-  errMess: null,
-  lastUpdated: null
-};
+export const updateUserStatus = createAsyncThunk(
+  'users/updateStatus',
+  async ({ userId, isOnline }, { getState, rejectWithValue }) => {
+    try {
+      const response = await fetch(baseUrl + `users/${userId}/status`, {
+        method: 'PATCH',
+        headers: {
+          ...authHeaders(getState),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isOnline })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Status update failed');
+      return { userId, isOnline, lastSeen: data.lastSeen };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.errMess = null;
+    resetUsers: (state) => {
+      state.users = [];
+      state.onlineUsers = {};
+      state.lastUpdated = null;
     },
-    setLocalUserStatus: (state, action) => {
-      const { userId, isOnline } = action.payload;
-      if (state.onlineUsers[userId] !== isOnline) {
-        state.onlineUsers[userId] = isOnline;
-      }
+    setLocalStatus: (state, { payload }) => {
+      state.onlineUsers[payload.userId] = payload.isOnline;
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
         state.isLoading = true;
-        state.errMess = null;
+        state.error = null;
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.users = action.payload;
+      .addCase(fetchUsers.fulfilled, (state, { payload }) => {
+        state.users = payload;
         state.isLoading = false;
         state.lastUpdated = new Date().toISOString();
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
+      .addCase(fetchUsers.rejected, (state, { payload }) => {
         state.isLoading = false;
-        state.errMess = action.payload?.message || 'Failed to fetch users';
+        state.error = payload;
       })
-      .addCase(updateUserStatus.fulfilled, (state, action) => {
-        const { userId, isOnline } = action.payload;
-        state.onlineUsers[userId] = isOnline;
-        const userIndex = state.users.findIndex(user => user.id === userId);
-        if (userIndex !== -1) {
-          state.users[userIndex] = {
-            ...state.users[userIndex],
-            lastSeen: new Date().toISOString()
-          };
-        }
+      .addCase(createUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
-      .addCase(addUser.fulfilled, (state, action) => {
-        state.users.push(action.payload);
-        state.lastUpdated = new Date().toISOString();
+      .addCase(createUser.fulfilled, (state, { payload }) => {
+        state.users.push(payload);
+        state.isLoading = false;
       })
-      .addCase(deleteUser.fulfilled, (state, action) => {
-        state.users = state.users.filter(user => user.id !== action.payload);
-        delete state.onlineUsers[action.payload];
-        state.lastUpdated = new Date().toISOString();
+      .addCase(createUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = payload;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        const index = state.users.findIndex(u => u.id === payload.id);
+        if (index !== -1) state.users[index] = payload;
+        state.isLoading = false;
+      })
+      .addCase(updateUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = payload;
+      })
+      .addCase(deleteUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, { payload }) => {
+        state.users = state.users.filter(u => u.id !== payload);
+        delete state.onlineUsers[payload];
+        state.isLoading = false;
+      })
+      .addCase(deleteUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = payload;
+      })
+      .addCase(updateUserStatus.fulfilled, (state, { payload }) => {
+        state.onlineUsers[payload.userId] = payload.isOnline;
+        const user = state.users.find(u => u.id === payload.userId);
+        if (user) user.lastSeen = payload.lastSeen;
       });
   }
 });
 
-export const { clearError, setLocalUserStatus } = userSlice.actions;
+export const { resetUsers, setLocalStatus } = userSlice.actions;
 export const userReducer = userSlice.reducer;
