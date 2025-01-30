@@ -5,6 +5,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator } from 'react-native';
 import { store, persistor } from './Redux/store';
+import React, { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+// import { Provider } from 'react-redux';
 import MainComponent from './screens/MainComponent';
 import { checkAuthToken } from './features/authSlice/authSlice';
 import { useDispatch } from 'react-redux';
@@ -36,11 +39,35 @@ const AppContent = () => {
 };
 
 export default function App() {
- return (
-   <Provider store={store}>
-     <PersistGate loading={<LoadingScreen />} persistor={persistor}>
-       <AppContent />
-     </PersistGate>
-   </Provider>
- );
+
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    const prepare = async() => {
+      try{
+        await SplashScreen.preventAutoHideAsync();
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      } finally{
+        setAppReady(true);
+      }
+    };
+    
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if(appReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [appReady]);
+
+  return (
+    <>
+      <NavigationContainer>
+        <MainComponent />
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </>
+  );
 }

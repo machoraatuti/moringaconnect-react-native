@@ -6,6 +6,11 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/moringaconnectsplash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A1F44"
+    }
   }
 }
