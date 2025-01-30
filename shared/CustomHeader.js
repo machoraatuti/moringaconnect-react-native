@@ -1,19 +1,18 @@
-
 // CustomHeader.js
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions ,  Platform} from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-//import { useDispatch, useSelector } from 'react-redux';
-//import { logoutUser } from '../Features/auth/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../features/authSlice/authSlice';
 import moringaLogo from "../assets/images/moringalogo.png";
 
 const CustomHeader = () => {
   const navigation = useNavigation();
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const windowWidth = Dimensions.get('window').width;
   const isLargeScreen = windowWidth >= 768;
- // const { isAdmin, isAuthenticated } = useSelector(state => state.auth);
+  const { isAdmin, isAuthenticated } = useSelector(state => state.auth);
 
   const handleSignOut = async () => {
     try {
@@ -41,11 +40,23 @@ const CustomHeader = () => {
 
   return (
     <View style={styles.header}>
+      {/* Menu Icon (Left-aligned) */}
+      {!isLargeScreen && (
+        <TouchableOpacity
+          onPress={() => navigation.openDrawer()}
+          style={styles.menuButton}
+        >
+          <Icon name="menu" size={24} color="#0A1F44" />
+        </TouchableOpacity>
+      )}
+
+      {/* Logo and Title */}
       <View style={styles.logoContainer}>
         <Image source={moringaLogo} style={styles.logo} />
         <Text style={styles.title}>Moringa Alumni Connect</Text>
       </View>
 
+      {/* Menu Items (for large screens) */}
       {isLargeScreen ? (
         <View style={styles.menuContainer}>
           {menuItems.map((item) => (
@@ -61,15 +72,9 @@ const CustomHeader = () => {
             <Icon name="exit-to-app" size={24} color="#0A1F44" />
           </TouchableOpacity>
         </View>
-      ) : (
-        <TouchableOpacity 
-          onPress={() => navigation.openDrawer()}
-          style={styles.menuButton}
-        >
-          <Icon name="menu" size={24} color="#0A1F44" />
-        </TouchableOpacity>
-      )}
+      ) : null}
 
+      {/* Profile Icon (Right-aligned) */}
       <TouchableOpacity onPress={handleProfileClick} style={styles.profileButton}>
         <Icon name="person" size={24} color="#0A1F44" />
       </TouchableOpacity>
@@ -99,6 +104,8 @@ const styles = StyleSheet.create({
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1, // Allow logo and title to take available space
+    marginLeft: 16, // Add margin to separate from the menu icon
   },
   logo: {
     height: 40,
@@ -107,7 +114,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#0A1F44',
-    fontSize: 18,
+    fontSize: 13,
     fontWeight: 'bold',
   },
   menuContainer: {
@@ -127,12 +134,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   menuButton: {
-    marginLeft: 'auto',
     padding: 8,
   },
   profileButton: {
     padding: 8,
-  }
+  },
 });
 
 export default CustomHeader;

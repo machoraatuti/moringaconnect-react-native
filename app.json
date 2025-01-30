@@ -6,6 +6,8 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "newArchEnabled": true
+    ],
     "splash": {
       "image": "./assets/images/moringaconnectsplash-screen.png",
       "resizeMode": "contain",

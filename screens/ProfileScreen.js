@@ -8,7 +8,7 @@ import Layout from '../shared/Layout';
 
 const colors = {
  primary: "#0A1F44",
- secondary: "#F05A28",
+ secondary: "#F05A28", 
  background: "#FFF5F2",
  white: "#FFFFFF",
 };
@@ -16,19 +16,13 @@ const colors = {
 const Profile = () => {
  const dispatch = useDispatch();
  const navigation = useNavigation();
- const { user, isAuthenticated } = useSelector(state => state.auth);
+ const { user } = useSelector(state => state.auth);
  
  const [editing, setEditing] = useState(false);
  const [description, setDescription] = useState("");
  const [location, setLocation] = useState("");
  const [editingPicture, setEditingPicture] = useState(false);
  const [newProfilePicture, setNewProfilePicture] = useState("");
-
- useEffect(() => {
-   if (!isAuthenticated) {
-     navigation.navigate('Login');
-   }
- }, [isAuthenticated, navigation]);
 
  useEffect(() => {
    if (user) {
@@ -92,7 +86,10 @@ const Profile = () => {
        { 
          text: "Delete", 
          style: "destructive", 
-         onPress: () => navigation.navigate('Login')
+         onPress: () => {
+           dispatch({ type: 'DELETE_ACCOUNT' });
+           navigation.replace('Login');
+         }
        }
      ]
    );
@@ -106,13 +103,16 @@ const Profile = () => {
        { text: "Cancel", style: "cancel" },
        { 
          text: "Logout", 
-         onPress: () => navigation.navigate('Login')
+         onPress: () => {
+           dispatch({ type: 'LOGOUT' });
+           navigation.replace('Login');
+         }
        }
      ]
    );
  };
 
- if (!user || !isAuthenticated) return null;
+ if (!user) return null;
 
  return (
    <Layout>

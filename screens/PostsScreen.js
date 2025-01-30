@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Picker } from '@react-native-picker/picker';
 import Layout from '../shared/Layout';
+import { fetchPosts, selectAllPosts, selectPostsLoading, selectPostsError } from '../features/postSlice/postSlice';
+import CreatePost from '../components/CreatePost'; 
+import PostCard from '../components/PostCard';
 
 const colors = {
  primary: '#0A1F44',
- secondary: '#F05A28', 
- background: '#FFF5F2',
+ secondary: '#F05A28',
+ background: '#FFF5F2', 
  white: '#FFFFFF'
 };
 
-const Posts = () => {
- //const dispatch = useDispatch();
- //const posts = useSelector(selectAllPosts);
+const PostScreen = () => {
+ const dispatch = useDispatch();
+ const posts = useSelector(selectAllPosts);
+ const loading = useSelector(selectPostsLoading);
+ const error = useSelector(selectPostsError);
+
  const [searchTerm, setSearchTerm] = useState('');
  const [categoryFilter, setCategoryFilter] = useState('all');
- const [showCreatePost, setShowCreatePost] = useState(false);
+ const [isCreatePostVisible, setCreatePostVisible] = useState(false);
 
  useEffect(() => {
    dispatch(fetchPosts());
@@ -31,10 +37,25 @@ const Posts = () => {
    return matchesSearch && matchesCategory;
  });
 
- const handlePostCreated = () => {
-   setShowCreatePost(false);
-   dispatch(fetchPosts());
- };
+ if (loading) {
+   return (
+     <Layout>
+       <View style={styles.centeredContainer}>
+         <Text>Loading posts...</Text>
+       </View>
+     </Layout>
+   );
+ }
+
+ if (error) {
+   return (
+     <Layout>
+       <View style={styles.centeredContainer}>
+         <Text style={styles.errorText}>Error: {error}</Text>
+       </View>
+     </Layout>
+   );
+ }
 
  return (
    <Layout>
@@ -43,7 +64,7 @@ const Posts = () => {
          <Text style={styles.title}>Posts</Text>
          <TouchableOpacity
            style={styles.createButton}
-           onPress={() => setShowCreatePost(true)}
+           onPress={() => setCreatePostVisible(true)}
          >
            <Icon name="add" size={24} color={colors.white} />
            <Text style={styles.buttonText}>Create Post</Text>
@@ -78,7 +99,7 @@ const Posts = () => {
 
        <FlatList
          data={filteredPosts}
-         keyExtractor={(item) => item.id}
+         keyExtractor={(item) => item.id.toString()}
          renderItem={({ item }) => <PostCard post={item} />}
          ListEmptyComponent={() => (
            <View style={styles.emptyContainer}>
@@ -91,13 +112,13 @@ const Posts = () => {
          )}
        />
 
-       <Modal
-         visible={showCreatePost}
-         animationType="slide"
-         onRequestClose={() => setShowCreatePost(false)}
-       >
-         <CreatePost onClose={handlePostCreated} />
-       </Modal>
+       <CreatePost 
+         visible={isCreatePostVisible}
+         onClose={() => {
+           setCreatePostVisible(false);
+           dispatch(fetchPosts());
+         }}
+       />
      </View>
    </Layout>
  );
@@ -106,58 +127,73 @@ const Posts = () => {
 const styles = StyleSheet.create({
  container: {
    flex: 1,
-   backgroundColor: colors.background,
+   backgroundColor: colors.background
+ },
+ centeredContainer: {
+   flex: 1,
+   justifyContent: 'center',
+   alignItems: 'center'
  },
  header: {
    flexDirection: 'row',
    justifyContent: 'space-between',
    alignItems: 'center',
    padding: 16,
+   backgroundColor: colors.white
  },
  title: {
    fontSize: 24,
    fontWeight: '600',
-   color: colors.primary,
+   color: colors.primary
  },
  createButton: {
    flexDirection: 'row',
-   backgroundColor: colors.secondary,
-   padding: 12,
-   borderRadius: 8,
    alignItems: 'center',
+   backgroundColor: colors.secondary,
+   paddingHorizontal: 16,
+   paddingVertical: 8,
+   borderRadius: 8,
+   gap: 8
  },
  buttonText: {
    color: colors.white,
-   marginLeft: 8,
+   fontWeight: '500'
  },
  searchContainer: {
    padding: 16,
-   gap: 12,
+   backgroundColor: colors.white,
+   borderBottomWidth: 1,
+   borderBottomColor: 'rgba(0,0,0,0.1)'
  },
  searchBar: {
    flexDirection: 'row',
    alignItems: 'center',
-   backgroundColor: colors.white,
-   padding: 8,
+   backgroundColor: colors.background,
    borderRadius: 8,
+   paddingHorizontal: 12,
+   marginBottom: 12
  },
  searchInput: {
    flex: 1,
-   marginLeft: 8,
+   paddingVertical: 8,
+   marginLeft: 8
  },
  picker: {
-   backgroundColor: colors.white,
-   borderRadius: 8,
+   backgroundColor: colors.background,
+   borderRadius: 8
  },
  emptyContainer: {
    padding: 16,
-   alignItems: 'center',
+   alignItems: 'center'
  },
  emptyText: {
-   fontSize: 16,
    textAlign: 'center',
-   color: colors.primary,
+   color: '#666'
+ },
+ errorText: {
+   color: 'red',
+   fontSize: 16
  }
 });
 
-export default Posts;
+export default PostScreen;
