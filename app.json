@@ -8,9 +8,9 @@
     ],
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/moringaconnectsplash-screen.png",
+      "image": "./assets/images/mac-final-splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0A1F44"
+      "backgroundColor": "#FFE8E0"
     }
   }
 }

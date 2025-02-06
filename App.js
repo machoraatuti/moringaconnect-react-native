@@ -3,17 +3,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Provider, useDispatch } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from 'expo-status-bar';
-import { View, ActivityIndicator } from 'react-native';
 import { store, persistor } from './Redux/store';
 import * as SplashScreen from 'expo-splash-screen';
+import LaunchScreen from './components/LaunchScreen';
 import MainComponent from './screens/MainComponent';
 import { checkAuthToken } from './features/authSlice/authSlice';
 
-const LoadingScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0A1F44' }}>
-    <ActivityIndicator size="large" color="#F05A28" />
-  </View>
-);
+// Prevent auto-hiding of splash screen
+SplashScreen.preventAutoHideAsync();
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -32,31 +29,43 @@ const AppContent = () => {
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
+  const [splashHidden, setSplashHidden] = useState(false);
 
   useEffect(() => {
-    const prepare = async () => {
+    const prepareApp = async () => {
       try {
-        await SplashScreen.preventAutoHideAsync();
+        console.log("App is starting...");
+        
+        // Simulate splash screen duration
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Hide splash screen
+        await SplashScreen.hideAsync();
+        setSplashHidden(true);
+
+        // Simulate loading screen duration
         await new Promise(resolve => setTimeout(resolve, 5000));
-      } finally {
+        console.log("App is ready!");
+        
         setAppReady(true);
+      } catch (error) {
+        console.log("Error during app preparation:", error);
       }
     };
 
-    prepare();
+    prepareApp();
   }, []);
 
-  useEffect(() => {
-    if (appReady) {
-      SplashScreen.hideAsync();
-    }
-  }, [appReady]);
+  if (!splashHidden) {
+    return null; // Keeps the splash screen visible
+  }
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<LoadingScreen />} persistor={persistor}>
-        {appReady ? <AppContent /> : <LoadingScreen />}
+      <PersistGate loading={<LaunchScreen />} persistor={persistor}>
+        {appReady ? <AppContent /> : <LaunchScreen />}
       </PersistGate>
     </Provider>
   );
 }
+
