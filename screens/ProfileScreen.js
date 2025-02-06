@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Modal, Alert } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Switch, Modal, Alert } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
-//import Layout from '../shared/Layout';
 
 const colors = {
   primary: "#0A1F44",
   secondary: "#F05A28", 
   background: "#FFF5F2",
   white: "#FFFFFF",
+  textGray: "#666666",
+  borderColor: "#E0E0E0"
 };
 
 const Profile = () => {
@@ -18,18 +19,11 @@ const Profile = () => {
   const navigation = useNavigation();
   const { user } = useSelector(state => state.auth);
   
-  const [editing, setEditing] = useState(false);
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
   const [editingPicture, setEditingPicture] = useState(false);
   const [newProfilePicture, setNewProfilePicture] = useState("");
-
-  useEffect(() => {
-    if (user) {
-      setDescription(user.description || "");
-      setLocation(user.location || "");
-    }
-  }, [user]);
+  const [showActivity, setShowActivity] = useState(true);
+  const [showDonationDate, setShowDonationDate] = useState(false);
+  const [allowConnection, setAllowConnection] = useState(false);
 
   const handlePhotoUpload = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -72,243 +66,247 @@ const Profile = () => {
     }
   };
 
-  const handleSave = () => {
-    setEditing(false);
-    Alert.alert('Success', 'Profile updated successfully');
-  };
-
-  const handleDeleteAccount = () => {
-    Alert.alert(
-      "Delete Account",
-      "Are you sure? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
-          style: "destructive", 
-          onPress: () => {
-            dispatch({ type: 'DELETE_ACCOUNT' });
-            navigation.navigate('Auth');
-          }
-        }
-      ]
-    );
-  };
-
-  const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Logout", 
-          onPress: () => {
-            dispatch({ type: 'LOGOUT' });
-            navigation.navigate('Auth');
-          }
-        }
-      ]
-    );
-  };
-
-  if (!user) return null;
-
   return (
-   // <Layout>
-      <ScrollView style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => setEditingPicture(true)}>
-            <View style={styles.avatarContainer}>
-              <Image 
-                source={{ uri: newProfilePicture || user.avatar }}
-                style={styles.avatar}
-              />
-              <View style={styles.editIcon}>
-                <Icon name="edit" size={20} color={colors.white} />
-              </View>
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.email}>{user.email}</Text>
-        </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>My Profile</Text>
+      </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About Me</Text>
-          {editing ? (
-            <>
-              <TextInput
-                multiline
-                style={styles.input}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Add description..."
-              />
-              <TextInput
-                style={styles.input}
-                value={location}
-                onChangeText={setLocation}
-                placeholder="Add location..."
-              />
-              <TouchableOpacity 
-                style={styles.button}
-                onPress={handleSave}
-              >
-                <Text style={styles.buttonText}>Save</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <Text style={styles.text}>{description || "No description added yet."}</Text>
-              <Text style={styles.text}>Location: {location || "No location added yet."}</Text>
-              <TouchableOpacity 
-                style={styles.button}
-                onPress={() => setEditing(true)}
-              >
-                <Text style={styles.buttonText}>Edit</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => Alert.alert("Change Password", "Feature coming soon")}
-        >
-          <Text style={styles.buttonText}>Change Password</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.button, styles.deleteButton]} 
-          onPress={handleDeleteAccount}
-        >
-          <Text style={styles.buttonText}>Delete Account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.button, styles.logoutButton]} 
-          onPress={handleLogout}
-        >
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
-
-        <Modal
-          visible={editingPicture}
-          animationType="slide"
-          transparent={true}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Update Profile Picture</Text>
-              
-              <TouchableOpacity style={styles.modalButton} onPress={handleTakePhoto}>
-                <Icon name="camera-alt" size={24} color={colors.primary} />
-                <Text style={styles.modalButtonText}>Take Photo</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.modalButton} onPress={handlePhotoUpload}>
-                <Icon name="photo-library" size={24} color={colors.primary} />
-                <Text style={styles.modalButtonText}>Choose from Device</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.deleteButton]}
-                onPress={() => {
-                  setNewProfilePicture("");
-                  setEditingPicture(false);
-                }}
-              >
-                <Icon name="delete" size={24} color="#ff4444" />
-                <Text style={[styles.modalButtonText, { color: "#ff4444" }]}>
-                  Delete Current Photo
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.closeButton}
-                onPress={() => setEditingPicture(false)}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
+      <View style={styles.profileSection}>
+        <TouchableOpacity onPress={() => setEditingPicture(true)} style={styles.avatarContainer}>
+          <Image 
+            source={{ uri: newProfilePicture || user?.avatar }}
+            style={styles.avatar}
+          />
+          <View style={styles.plusIconContainer}>
+            <Icon name="add" size={20} color={colors.white} />
           </View>
-        </Modal>
-      </ScrollView>
-    //</Layout>
+        </TouchableOpacity>
+        
+        <View style={styles.profileInfo}>
+          <Text style={styles.name}>Anitta Vinter</Text>
+          <Text style={styles.role}>Alumni</Text>
+          <Text style={styles.designation}>Designer (UI/UX) 2023</Text>
+        </View>
+      </View>
+
+      {/* Experience Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Experience</Text>
+        <View style={styles.experienceItem}>
+          <Text style={styles.jobTitle}>Designer (UI/UX)</Text>
+          <Text style={styles.jobPeriod}>2024-2025</Text>
+          <Text style={styles.company}>Alléen/Anteroz Company</Text>
+        </View>
+      </View>
+
+      {/* Activity Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Activity</Text>
+        <Text style={styles.activityText}>Attended Tech events and start-ups.</Text>
+      </View>
+
+      {/* General Settings Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>General Settings</Text>
+        <View style={styles.settingItem}>
+          <View style={styles.settingTextContainer}>
+            <Text style={styles.settingTitle}>Activity</Text>
+            <Text style={styles.settingDescription}>Allow users to see your activity</Text>
+          </View>
+          <Switch
+            value={showActivity}
+            onValueChange={setShowActivity}
+            trackColor={{ false: colors.borderColor, true: colors.secondary }}
+          />
+        </View>
+
+        <View style={styles.settingItem}>
+          <View style={styles.settingTextContainer}>
+            <Text style={styles.settingTitle}>Show Donation Date</Text>
+            <Text style={styles.settingDescription}>Donation date is displayed to other users</Text>
+          </View>
+          <Switch
+            value={showDonationDate}
+            onValueChange={setShowDonationDate}
+            trackColor={{ false: colors.borderColor, true: colors.secondary }}
+          />
+        </View>
+
+        <View style={styles.settingItem}>
+          <View style={styles.settingTextContainer}>
+            <Text style={styles.settingTitle}>Allow users to connect</Text>
+            <Text style={styles.settingDescription}>Allows people to message you on app directly</Text>
+          </View>
+          <Switch
+            value={allowConnection}
+            onValueChange={setAllowConnection}
+            trackColor={{ false: colors.borderColor, true: colors.secondary }}
+          />
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.editButton}>
+        <Text style={styles.editButtonText}>Edit Profile</Text>
+      </TouchableOpacity>
+
+      {/* Photo Upload Modal */}
+      <Modal
+        visible={editingPicture}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Update Profile Picture</Text>
+            
+            <TouchableOpacity style={styles.modalButton} onPress={handleTakePhoto}>
+              <Icon name="camera-alt" size={24} color={colors.primary} />
+              <Text style={styles.modalButtonText}>Take Photo</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton} onPress={handlePhotoUpload}>
+              <Icon name="photo-library" size={24} color={colors.primary} />
+              <Text style={styles.modalButtonText}>Choose from Device</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => setEditingPicture(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.white,
   },
   header: {
-    alignItems: 'center',
-    padding: 20,
+    padding: 16,
+    backgroundColor: colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderColor,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  profileSection: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderColor,
   },
   avatarContainer: {
     position: 'relative',
+    width: 80,
+    height: 80,
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: '#ddd'
   },
-  editIcon: {
+  plusIconContainer: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: colors.primary,
-    borderRadius: 15,
-    padding: 5,
+    backgroundColor: colors.secondary,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileInfo: {
+    marginTop: 12,
   },
   name: {
     fontSize: 24,
     fontWeight: '600',
     color: colors.primary,
-    marginTop: 10,
   },
-  email: {
-    color: colors.primary,
+  role: {
+    fontSize: 16,
+    color: colors.textGray,
+    marginTop: 4,
+  },
+  designation: {
+    fontSize: 16,
+    color: colors.textGray,
+    marginTop: 2,
   },
   section: {
-    padding: 20,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderColor,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '500',
+    color: colors.secondary,
+    marginBottom: 12,
+  },
+  experienceItem: {
+    marginBottom: 8,
+  },
+  jobTitle: {
+    fontSize: 16,
+    fontWeight: '500',
     color: colors.primary,
-    marginBottom: 10,
   },
-  input: {
-    backgroundColor: colors.white,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
+  jobPeriod: {
+    fontSize: 14,
+    color: colors.textGray,
+    marginTop: 2,
   },
-  text: {
-    color: colors.primary,
-    marginBottom: 5,
+  company: {
+    fontSize: 14,
+    color: colors.textGray,
+    marginTop: 2,
   },
-  button: {
-    backgroundColor: colors.secondary,
-    padding: 15,
-    borderRadius: 8,
+  activityText: {
+    fontSize: 14,
+    color: colors.textGray,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 20,
-    marginBottom: 10,
+    paddingVertical: 12,
   },
-  buttonText: {
+  settingTextContainer: {
+    flex: 1,
+    marginRight: 16,
+  },
+  settingTitle: {
+    fontSize: 16,
+    color: colors.primary,
+  },
+  settingDescription: {
+    fontSize: 14,
+    color: colors.textGray,
+    marginTop: 2,
+  },
+  editButton: {
+    backgroundColor: colors.secondary,
+    margin: 16,
+    padding: 16,
+    borderRadius: 25,
+    alignItems: 'center',
+  },
+  editButtonText: {
     color: colors.white,
+    fontSize: 16,
     fontWeight: '600',
-  },
-  deleteButton: {
-    backgroundColor: '#ff4444',
-  },
-  logoutButton: {
-    backgroundColor: colors.primary,
   },
   modalContainer: {
     flex: 1,
