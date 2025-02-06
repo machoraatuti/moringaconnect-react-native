@@ -1,143 +1,122 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { baseUrl } from '../../shared/baseUrl';
 
+// Async thunk for fetching posts
 export const fetchPosts = createAsyncThunk(
     'posts/fetchPosts',
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
-            const response = await fetch(baseUrl + 'posts');
-            if (!response.ok) {
-                return Promise.reject('Unable to fetch posts: ' + response.status);
+            console.log('Starting posts fetch process...');
+            const state = getState();
+            const token = state.auth?.token;
+
+            // Basic authentication check
+            if (!token) {
+                console.log('Authentication token not found');
+                return rejectWithValue('Authentication required');
             }
-            return await response.json();
+
+            // Making the authenticated request
+            const response = await fetch(baseUrl + 'posts', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                console.log('Server response not ok:', response.status);
+                throw new Error(`Failed to fetch posts: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Successfully fetched posts:', data.length);
+            return data;
+
         } catch (error) {
+            console.error('Fetch error:', error.message);
             return rejectWithValue(error.message);
         }
     }
 );
 
+// Async thunk for creating posts
 export const createPost = createAsyncThunk(
     'posts/createPost',
-    async (formData, { rejectWithValue }) => {
+    async (formData, { getState, rejectWithValue }) => {
         try {
+            const state = getState();
+            const token = state.auth?.token;
+            const userId = state.auth?.user?.id;
+
+            if (!token || !userId) {
+                return rejectWithValue('Authentication required');
+            }
+
+            const postData = {
+                ...Object.fromEntries(formData),
+                userId,
+                createdAt: new Date().toISOString()
+            };
+
             const response = await fetch(baseUrl + 'posts', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(Object.fromEntries(formData))
+                body: JSON.stringify(postData)
             });
+
             if (!response.ok) {
-                return Promise.reject('Unable to create post: ' + response.status);
+                throw new Error(`Failed to create post: ${response.status}`);
             }
-            return await response.json();
+
+            const newPost = await response.json();
+            return newPost;
+
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
+// Async thunk for post interactions (likes, comments)
 export const toggleLike = createAsyncThunk(
     'posts/toggleLike',
-    async ({ postId, userId }, { rejectWithValue }) => {
+    async ({ postId }, { getState, rejectWithValue }) => {
         try {
+            const state = getState();
+            const token = state.auth?.token;
+            const userId = state.auth?.user?.id;
+
+            if (!token || !userId) {
+                return rejectWithValue('Authentication required');
+            }
+
             const response = await fetch(baseUrl + `posts/${postId}/like`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ userId })
             });
+
             if (!response.ok) {
-                return Promise.reject('Unable to toggle like: ' + response.status);
+                throw new Error(`Failed to toggle like: ${response.status}`);
             }
+
             return await response.json();
+
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
-export const addComment = createAsyncThunk(
-    'posts/addComment',
-    async ({ postId, content, userId }, { rejectWithValue }) => {
-        try {
-            const response = await fetch(baseUrl + `posts/${postId}/comments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content, userId })
-            });
-            if (!response.ok) {
-                return Promise.reject('Unable to add comment: ' + response.status);
-            }
-            return await response.json();
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const deleteComment = createAsyncThunk(
-    'posts/deleteComment',
-    async ({ postId, commentId }, { rejectWithValue }) => {
-        try {
-            const response = await fetch(baseUrl + `posts/${postId}/comments/${commentId}`, {
-                method: 'DELETE'
-            });
-            if (!response.ok) {
-                return Promise.reject('Unable to delete comment: ' + response.status);
-            }
-            return { postId, commentId };
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const editPost = createAsyncThunk(
-    'posts/editPost',
-    async ({ postId, updatedData }, { rejectWithValue }) => {
-        try {
-            const response = await fetch(baseUrl + `posts/${postId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(updatedData)
-            });
-            if (!response.ok) {
-                return Promise.reject('Unable to edit post: ' + response.status);
-            }
-            return await response.json();
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const deletePost = createAsyncThunk(
-    'posts/deletePost',
-    async (postId, { rejectWithValue }) => {
-        try {
-            const response = await fetch(baseUrl + `posts/${postId}`, {
-                method: 'DELETE'
-            });
-            if (!response.ok) {
-                return Promise.reject('Unable to delete post: ' + response.status);
-            }
-            return postId;
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const selectAllPosts = (state) => state.posts.posts;
-export const selectPostsLoading = (state) => state.posts.isLoading;
-export const selectPostsError = (state) => state.posts.errMess;
-
+// Initial state definition
 const initialState = {
     posts: [],
     isLoading: false,
@@ -145,13 +124,19 @@ const initialState = {
     currentPost: null
 };
 
+// Selector functions
+export const selectAllPosts = (state) => {
+    console.log('Selecting posts, count:', state.posts.posts.length);
+    return state.posts.posts;
+};
+export const selectPostsLoading = (state) => state.posts.isLoading;
+export const selectPostsError = (state) => state.posts.errMess;
+
+// Create the posts slice
 const postsSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
-        setCurrentPost: (state, action) => {
-            state.currentPost = action.payload;
-        },
         clearErrors: (state) => {
             state.errMess = null;
         },
@@ -169,6 +154,7 @@ const postsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // Handle fetchPosts lifecycle
             .addCase(fetchPosts.pending, (state) => {
                 state.isLoading = true;
                 state.errMess = null;
@@ -180,44 +166,23 @@ const postsSlice = createSlice({
             })
             .addCase(fetchPosts.rejected, (state, action) => {
                 state.isLoading = false;
-                state.errMess = action.error ? action.error.message : 'Fetch failed';
+                state.errMess = action.payload;
             })
+            // Handle createPost success
             .addCase(createPost.fulfilled, (state, action) => {
                 state.posts.unshift(action.payload);
             })
+            // Handle toggleLike success
             .addCase(toggleLike.fulfilled, (state, action) => {
-                const { postId, likes, likedBy } = action.payload;
-                const post = state.posts.find(p => p.id === postId);
+                const { id, likes, likedBy } = action.payload;
+                const post = state.posts.find(p => p.id === id);
                 if (post) {
                     post.likes = likes;
                     post.likedBy = likedBy;
                 }
-            })
-            .addCase(addComment.fulfilled, (state, action) => {
-                const { postId, comments } = action.payload;
-                const post = state.posts.find(p => p.id === postId);
-                if (post) {
-                    post.comments = comments;
-                }
-            })
-            .addCase(deleteComment.fulfilled, (state, action) => {
-                const { postId, commentId } = action.payload;
-                const post = state.posts.find(p => p.id === postId);
-                if (post) {
-                    post.comments = post.comments.filter(c => c.id !== commentId);
-                }
-            })
-            .addCase(editPost.fulfilled, (state, action) => {
-                const index = state.posts.findIndex(p => p.id === action.payload.id);
-                if (index !== -1) {
-                    state.posts[index] = action.payload;
-                }
-            })
-            .addCase(deletePost.fulfilled, (state, action) => {
-                state.posts = state.posts.filter(post => post.id !== action.payload);
             });
     }
 });
 
-export const { setCurrentPost, clearErrors, clearPosts, incrementViews } = postsSlice.actions;
+export const { clearErrors, clearPosts, incrementViews } = postsSlice.actions;
 export const postsReducer = postsSlice.reducer;

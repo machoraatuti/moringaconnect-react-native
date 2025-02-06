@@ -1,10 +1,23 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ActivityIndicator 
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EventCard from '../components/EventCard';
-import { colors } from '../constants';
-import { fetchEvents } from '../redux/slices/eventSlice';
+import { fetchEvents } from '../features/eventSlice/eventSlice';
+
+const colors = {
+  primary: "#0A1F44",
+  secondary: "#F05A28",
+  background: "#FFF5F2",
+  white: "#FFFFFF"
+};
 
 const AdminEvents = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -13,11 +26,14 @@ const AdminEvents = ({ navigation }) => {
 
   useEffect(() => {
     if (!isAdmin) {
-      navigation.navigate('Login');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' }]
+      });
       return;
     }
     dispatch(fetchEvents());
-  }, [isAdmin]);
+  }, [isAdmin, dispatch, navigation]);
 
   const handleEventPress = (event) => {
     navigation.navigate('EventDetails', { event });
@@ -38,8 +54,9 @@ const AdminEvents = ({ navigation }) => {
             onPress={() => handleEventPress(item)}
           />
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.list}
+        ListEmptyComponent={EmptyListView}
       />
       <FAB onPress={() => navigation.navigate('CreateEvent')} />
     </View>
@@ -48,7 +65,7 @@ const AdminEvents = ({ navigation }) => {
 
 const Header = ({ navigation }) => (
   <View style={styles.header}>
-    <Text style={styles.title}>Events</Text>
+    <Text style={styles.title}>Events Management</Text>
     <TouchableOpacity 
       onPress={() => navigation.navigate('CreateEvent')}
       style={styles.headerButton}
@@ -65,8 +82,17 @@ const FAB = ({ onPress }) => (
 );
 
 const LoadingView = () => (
-  <View style={styles.loading}>
-    <ActivityIndicator size="large" color={colors.primary} />
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color={colors.secondary} />
+    <Text style={styles.loadingText}>Loading Events...</Text>
+  </View>
+);
+
+const EmptyListView = () => (
+  <View style={styles.emptyContainer}>
+    <Icon name="event" size={64} color={colors.primary} style={styles.emptyIcon} />
+    <Text style={styles.emptyTitle}>No Events Found</Text>
+    <Text style={styles.emptySubtitle}>Create your first event!</Text>
   </View>
 );
 
@@ -98,18 +124,48 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     bottom: 16,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     width: 56,
     height: 56,
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4
+    elevation: 4,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  loading: {
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: colors.background
+  },
+  loadingText: {
+    marginTop: 16,
+    color: colors.primary,
+    fontSize: 16
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
+  emptyIcon: {
+    marginBottom: 16
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 8
+  },
+  emptySubtitle: {
+    fontSize: 16,
+    color: colors.secondary,
+    textAlign: 'center'
   }
 });
 
