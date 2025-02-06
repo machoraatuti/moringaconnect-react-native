@@ -1,42 +1,61 @@
-// components/EventCard.js
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { colors } from '../constants';
+
+const colors = {
+  primary: "#0A1F44",
+  secondary: "#F05A28",
+  background: "#FFF5F2",
+  white: "#FFFFFF"
+};
 
 const getStatusColor = (status) => {
   switch (status) {
     case 'upcoming':
       return colors.primary;
     case 'completed':
-      return 'green';
+      return '#2ECC71'; // A green that complements the palette
     case 'cancelled':
-      return 'red';
+      return '#E74C3C'; // A red that works with the color scheme
     default:
-      return 'orange';
+      return colors.secondary;
   }
 };
 
-const EventCard = ({ event, onActionPress }) => {
+const EventCard = ({ event, onPress, onActionPress }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
       <Image
         source={{ uri: event.image || 'https://via.placeholder.com/300' }}
         style={styles.image}
+        resizeMode="cover"
       />
-      
+
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title} numberOfLines={2}>
             {event.title}
           </Text>
-          <TouchableOpacity onPress={onActionPress}>
-            <Icon name="more-vert" size={24} color={colors.primary} />
-          </TouchableOpacity>
+          {onActionPress && (
+            <TouchableOpacity onPress={onActionPress}>
+              <Icon name="more-vert" size={24} color={colors.primary} />
+            </TouchableOpacity>
+          )}
         </View>
 
-        <View style={[styles.statusChip, { backgroundColor: getStatusColor(event.status) }]}>
-          <Text style={styles.statusText}>{event.status}</Text>
+        <View 
+          style={[
+            styles.statusChip, 
+            { backgroundColor: getStatusColor(event.status) }
+          ]}
+        >
+          <Text style={styles.statusText}>
+            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+          </Text>
         </View>
 
         <Text style={styles.description} numberOfLines={3}>
@@ -64,7 +83,7 @@ const EventCard = ({ event, onActionPress }) => {
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -74,6 +93,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
     elevation: 3,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     overflow: 'hidden',
   },
   image: {
@@ -107,9 +130,10 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 12,
     fontWeight: '500',
+    textTransform: 'capitalize',
   },
   description: {
-    color: 'gray',
+    color: '#666',
     marginBottom: 12,
     fontSize: 14,
   },
@@ -122,7 +146,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   detailText: {
-    color: 'gray',
+    color: '#666',
     fontSize: 14,
   },
 });
