@@ -7,7 +7,7 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
-  SafeAreaView,
+  SafeAreaView,ScrollView
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 
