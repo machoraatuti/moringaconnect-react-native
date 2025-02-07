@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { View, ActivityIndicator, TouchableOpacity, Text, Alert } from 'react-native';
 
 // Screens
-import LandingScreen from './LandingScreen';
+
 import LandingScreen from './LandingScreen';
 import Home from './HomeScreen';
 import UserRegistration from './UserRegistrationScreen';
