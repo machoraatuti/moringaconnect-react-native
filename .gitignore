@@ -54,4 +54,4 @@ buck-out/
 .expo/
 web-build/
 dist/
-baseURL.js
+baseUrl.js
