@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { View, ActivityIndicator, TouchableOpacity, Text, Alert } from 'react-native';
 
 // Screens
+import LandingScreen from './LandingScreen';
 import LandingScreen from './LandingScreen';
 import Home from './HomeScreen';
 import UserRegistration from './UserRegistrationScreen';
@@ -24,37 +25,34 @@ const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const NotificationIcon = () => (
- <TouchableOpacity 
-   style={{ marginRight: 16 }}
-   onPress={() => {
-     console.log('Notifications pressed');
-   }}
- >
-   <View style={{ position: 'relative' }}>
-     <Icon 
-       name="bell" 
-       type="font-awesome" 
-       size={24} 
-       color="#fff" 
-     />
-     <View style={{
-       position: 'absolute',
-       top: -5,
-       right: -5,
-       backgroundColor: '#f44336',
-       borderRadius: 10,
-       width: 20,
-       height: 20,
-       justifyContent: 'center',
-       alignItems: 'center',
-       zIndex: 1
-     }}>
-       <Text style={{ color: '#fff', fontSize: 12 }}>2</Text>
-     </View>
-   </View>
- </TouchableOpacity>
-);
+const NotificationIcon = ({ count = 0 }) => {
+  return (
+    <TouchableOpacity style={{ marginRight: 16 }} onPress={() => console.log("Notifications pressed")}>
+      <View style={{ position: "relative" }}>
+        <Icon name="bell" type="font-awesome" size={24} color="#fff" />
+        {count > 0 && (
+          <View
+            style={{
+              position: "absolute",
+              top: -5,
+              right: -5,
+              backgroundColor: "#f44336",
+              borderRadius: 10,
+              width: 20,
+              height: 20,
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1,
+            }}
+          >
+            <Text style={{ color: "#fff", fontSize: 12 }}>{count}</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 
 const AuthStack = () => (
  <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
@@ -84,8 +82,8 @@ const BottomTabs = () => {
            case 'Groups':
              iconName = 'users';
              break;
-           case 'Search':
-             iconName = 'search';
+           case 'Explore':
+             iconName = 'compass';
              break;
            case 'Profile':
              iconName = 'user';
@@ -104,7 +102,7 @@ const BottomTabs = () => {
      />
      <Tab.Screen name="Messages" component={Messages} />
      <Tab.Screen name="Groups" component={Groups} />
-     <Tab.Screen name="Search" component={Search} />
+     <Tab.Screen name="Explore" component={Search} />
      <Tab.Screen name="Profile" component={Profile} />
    </Tab.Navigator>
  );
@@ -127,14 +125,15 @@ const LandingStack = () => {
         name="Welcome"
         component={LandingScreen}
         options={{
-          headerShown: true,
+          headerShown: false,
           headerStyle: {
-            backgroundColor: "#3F51B5"
+            backgroundColor: "#0A1F44"
           },
           headerTintColor: "#FFFFFF",
           headerTitleStyle: {
             fontWeight: "bold"
-          }
+          },
+          padding: 20
         }}
       />
     </Stack.Navigator>
@@ -147,21 +146,16 @@ const MainComponent = () => {
  const dispatch = useDispatch();
  const [activeRouteName, setActiveRouteName] = React.useState('Home');
 
- const handleLogout = (navigation) => {
-   Alert.alert(
-     "Logout",
-     "Are you sure you want to logout?",
-     [
-       { text: "Cancel", style: "cancel" },
-       { 
-         text: "Logout", 
-         onPress: () => {
-           dispatch({ type: 'LOGOUT' });
-         }
-       }
-     ]
-   );
- };
+ const handleLogout = useCallback((navigation) => {
+  Alert.alert("Logout", "Are you sure you want to logout?", [
+    { text: "Cancel", style: "cancel" },
+    {
+      text: "Logout",
+      onPress: () => dispatch({ type: "LOGOUT" }),
+    },
+  ]);
+}, [dispatch]);
+
 
  if (isLoading) {
    return (
@@ -182,6 +176,7 @@ const MainComponent = () => {
      screenOptions={({ route, navigation }) => ({
        headerStyle: { 
          backgroundColor: '#0A1F44',
+         height: 80,
          elevation: 0,
          shadowOpacity: 0,
        },
@@ -207,30 +202,36 @@ const MainComponent = () => {
    >
 
      <Drawer.Screen 
-        name="Landing"
+        name="Welcome"
         component={LandingStack}
+        options={({ navigation }) => ({
+          drawerIcon: ({ color }) => (
+              <Icon name="door-open" type="font-awesome-5" size={24} color={color} />
+          ),
+          headerTitleAlign: "center", // Keep title centered
+      })}
      />
 
-     <Drawer.Screen
-       name="Main"
-       component={BottomTabs}
-       options={{
-         title: activeRouteName,
-       }}
-       listeners={({ navigation }) => ({
-         state: (e) => {
-           if (e.data.state) {
-             const index = e.data.state.index;
-             const routes = e.data.state.routes;
-             if (routes && routes[index]) {
-               const currentRoute = routes[index];
-               let newRouteName = currentRoute.name.replace('Tab', '');
-               setActiveRouteName(newRouteName);
-             }
-           }
-         },
-       })}
-     />
+      <Drawer.Screen
+        name="Home"
+        component={BottomTabs}
+        options={{
+          title: activeRouteName,
+          drawerIcon: ({ color }) => (
+            <Icon name="home-heart" type="material-community" size={24} color={color} />
+          ),
+        }}
+        listeners={({ navigation }) => ({
+          state: (e) => {
+            const state = navigation.getState();
+            if (state?.routes?.length > 0) {
+              const currentRoute = state.routes[state.index]?.name.replace("Tab", "");
+              setActiveRouteName(currentRoute);
+            }
+          },
+        })}
+        
+      />
 
 <Drawer.Screen
     name="Alumni Directory"
@@ -286,17 +287,22 @@ const MainComponent = () => {
      )}
 
      <Drawer.Screen
-       name="Logout"
-       component={() => null}
-       listeners={({ navigation }) => ({
-         drawerItemPress: () => handleLogout(navigation),
-       })}
-       options={{
-         drawerIcon: ({ color }) => (
-           <Icon name="sign-out" type="font-awesome" size={24} color={color} />
-         )
-       }}
-     />
+        name="Logout"
+        component={() => null}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Icon name="sign-out" type="font-awesome" size={24} color={color} />
+          ),
+          drawerLabel: "Logout",
+        }}
+        listeners={({ navigation }) => ({
+          drawerItemPress: (e) => {
+            e.preventDefault(); // Prevent navigating to a blank screen
+            handleLogout(navigation);
+          },
+        })}
+      />
+
    </Drawer.Navigator>
  );
 };
