@@ -1,96 +1,85 @@
-// SearchScreen.js
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  SafeAreaView,ScrollView
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  StyleSheet, 
+  SafeAreaView, 
+  TouchableOpacity 
 } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 
 const SearchScreen = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
-
-  const filters = ['All', 'People', 'Groups', 'Events', 'Posts'];
-
-  const searchResults = [
-    { id: '1', type: 'People', title: 'John Doe', subtitle: 'Software Developer' },
-    { id: '2', type: 'Groups', title: 'Tech Enthusiasts', subtitle: '1.2k members' },
-    { id: '3', type: 'Events', title: 'Annual Meetup', subtitle: 'Dec 24, 2024' },
-    // Add more search results as needed
-  ];
-
-  const renderSearchItem = ({ item }) => (
-    <TouchableOpacity style={styles.searchItem}>
-      <View style={styles.searchItemLeft}>
-        <Icon
-          name={item.type === 'People' ? 'user' : item.type === 'Groups' ? 'users' : 'calendar'}
-          type="font-awesome"
-          size={24}
-          color="#666"
-        />
-        <View style={styles.searchItemContent}>
-          <Text style={styles.searchItemTitle}>{item.title}</Text>
-          <Text style={styles.searchItemSubtitle}>{item.subtitle}</Text>
-        </View>
-      </View>
-      <Icon name="chevron-right" type="font-awesome" size={16} color="#666" />
-    </TouchableOpacity>
-  );
-
-  const filteredResults = activeFilter === 'All'
-    ? searchResults
-    : searchResults.filter(item => item.type === activeFilter);
+  const [formData, setFormData] = useState({
+    firstName: 'Jeremy',
+    lastName: '',
+    branch: '',
+    batch: ''
+  });
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.searchContainer}>
-        <Icon name="search" type="font-awesome" size={20} color="#666" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#666"
-        />
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity>
+          <Ionicons name="menu" size={28} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Search</Text>
+        <TouchableOpacity>
+          <Ionicons name="notifications-outline" size={24} color="#000" />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filtersContainer}
-      >
-        {filters.map((filter) => (
-          <TouchableOpacity
-            key={filter}
-            style={[
-              styles.filterButton,
-              activeFilter === filter && styles.activeFilterButton,
-            ]}
-            onPress={() => setActiveFilter(filter)}
-          >
-            <Text
-              style={[
-                styles.filterText,
-                activeFilter === filter && styles.activeFilterText,
-              ]}
-            >
-              {filter}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* Main Content */}
+      <View style={styles.content}>
+        <Text style={styles.title}>Find your</Text>
+        <Text style={styles.subtitle}>Batchmates /Mentors</Text>
 
-      <FlatList
-        data={filteredResults}
-        renderItem={renderSearchItem}
-        keyExtractor={(item) => item.id}
-        style={styles.resultsList}
-      />
+        {/* Search Form */}
+        <View style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>First Name</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.firstName}
+              onChangeText={(text) => setFormData({...formData, firstName: text})}
+              placeholder="Enter first name"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Last Name</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.lastName}
+              onChangeText={(text) => setFormData({...formData, lastName: text})}
+              placeholder="Enter last name"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Branch</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.branch}
+              onChangeText={(text) => setFormData({...formData, branch: text})}
+              placeholder="Enter branch"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Batch</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.batch}
+              onChangeText={(text) => setFormData({...formData, batch: text})}
+              placeholder="Enter batch"
+            />
+          </View>
+        </View>
+      </View>
+
+      
     </SafeAreaView>
   );
 };
@@ -98,73 +87,67 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
-  searchInput: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: '#333',
-  },
-  filtersContainer: {
-    padding: 12,
-  },
-  filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  activeFilterButton: {
-    backgroundColor: '#f4511e',
-    borderColor: '#f4511e',
-  },
-  filterText: {
-    color: '#666',
-    fontSize: 14,
-  },
-  activeFilterText: {
-    color: '#fff',
-  },
-  resultsList: {
-    flex: 1,
-  },
-  searchItem: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    backgroundColor: '#E67E4D',
   },
-  searchItemLeft: {
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  subtitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 40,
+  },
+  form: {
+    gap: 20,
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  label: {
+    fontSize: 16,
+    color: '#666',
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 8,
+    fontSize: 16,
+  },
+  bottomNav: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: '#fff',
+  },
+  navItem: {
     alignItems: 'center',
   },
-  searchItemContent: {
-    marginLeft: 12,
-  },
-  searchItemTitle: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-  },
-  searchItemSubtitle: {
-    fontSize: 14,
+  navText: {
+    fontSize: 12,
     color: '#666',
-    marginTop: 2,
+    marginTop: 4,
   },
 });
 
