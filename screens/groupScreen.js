@@ -1,288 +1,126 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  View, Text, FlatList, StyleSheet, TouchableOpacity,
-  TextInput, Modal, SafeAreaView, ScrollView, Alert
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  TextInput
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import CreateGroup from '../components/CreateGroup';
-import { baseUrl } from '../shared/baseUrl';
+import { Ionicons } from '@expo/vector-icons';
 
-const colors = {
-  primary: '#0A1F44',
-  secondary: '#F05A28',
-  background: '#FFF5F2',
-  white: '#FFFFFF',
-  divider: 'rgba(240, 90, 40, 0.12)'
-};
-
-const GroupCard = ({ group, onView, onEdit, onDelete, onJoin }) => (
-  <View style={styles.card}>
-    <View style={styles.cardHeader}>
-      <View>
-        <Text style={styles.groupName}>{group.name}</Text>
-        <Text style={styles.description}>{group.description}</Text>
-      </View>
-      <View style={styles.categoryChip}>
-        <Text style={styles.categoryText}>{group.category}</Text>
-      </View>
-    </View>
-
-    <View style={styles.statsContainer}>
-      <View style={styles.stat}>
-        <Icon name="group" size={16} color={colors.primary} />
-        <Text style={styles.statText}>{group.memberCount || 0} members</Text>
-      </View>
-      <View style={styles.stat}>
-        <Icon name="event" size={16} color={colors.secondary} />
-        <Text style={styles.statText}>{group.upcomingEvents || 0} events</Text>
-      </View>
-      <View style={styles.stat}>
-        <Icon name="chat" size={16} color={colors.secondary} />
-        <Text style={styles.statText}>{group.recentDiscussions || 0} discussions</Text>
-      </View>
-    </View>
-
-    <View style={styles.actions}>
-      <TouchableOpacity onPress={() => onView(group)}>
-        <Icon name="visibility" size={24} color={colors.primary} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => onEdit(group)}>
-        <Icon name="edit" size={24} color={colors.secondary} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => onDelete(group.id)}>
-        <Icon name="delete" size={24} color="#d32f2f" />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => onJoin(group.id)}>
-        <Icon name="group-add" size={24} color={colors.secondary} />
-      </TouchableOpacity>
-    </View>
-  </View>
-);
-
-const Groups = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [groups, setGroups] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [isCreateModalVisible, setCreateModalVisible] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editData, setEditData] = useState({
-    upcomingEvents: '',
-    discussions: '',
-    jobPostings: ''
-  });
-
-  useEffect(() => {
-    fetchGroups();
-  }, []);
-
-  const fetchGroups = async () => {
-    try {
-      const response = await fetch(baseUrl + 'groups');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setGroups(data);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to fetch groups');
+const CommunityGroupsScreen = () => {
+  const groups = [
+    {
+      id: 1,
+      name: 'Software Developer',
+      lastMessage: {
+        author: 'Jeremy',
+        content: 'Sure'
+      },
+      date: 'Nov 22,2023',
+      members: 10,
+      image: require('../assets/images/avatar-dir-1.jpeg'),
+      unreadCount: 0
+    },
+    {
+      id: 2,
+      name: 'Homecoming 22',
+      lastMessage: {
+        author: 'Marion',
+        content: 'Done'
+      },
+      date: 'Nov 21,2023',
+      members: 16,
+      image: require('../assets/images/avatar-dir-2.jpeg'),
+      unreadCount: 1
+    },
+    {
+      id: 3,
+      name: 'Techno Geeks',
+      lastMessage: {
+        author: 'Mishael',
+        content: 'Great Work !'
+      },
+      date: 'Nov 21,2023',
+      members: 22,
+      image: require('../assets/images/avatar-dir-3.jpeg'),
+      unreadCount: 0
+    },
+    {
+      id: 4,
+      name: 'Computers',
+      lastMessage: {
+        author: 'Horace',
+        content: 'Where?'
+      },
+      date: 'Nov 21,2023',
+      members: 12,
+      image: require('../assets/images/avatar-dir-4.jpeg'),
+      unreadCount: 1
     }
-  };
+  ];
 
-  const handleAddGroup = async (newGroup) => {
-    try {
-      const response = await fetch(baseUrl + 'groups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newGroup)
-      });
-      if (!response.ok) throw new Error('Failed to create group');
-      const savedGroup = await response.json();
-      setGroups(prev => [...prev, savedGroup]);
-      setCreateModalVisible(false);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to create group');
-    }
-  };
-
-  const handleDeleteGroup = async (groupId) => {
-    try {
-      const response = await fetch(baseUrl + `groups/${groupId}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) throw new Error('Failed to delete group');
-      setGroups(prev => prev.filter(group => group.id !== groupId));
-    } catch (error) {
-      Alert.alert('Error', 'Failed to delete group');
-    }
-  };
-
-  const handleJoinGroup = async (groupId) => {
-    try {
-      const response = await fetch(baseUrl + `groups/${groupId}/join`, {
-        method: 'POST'
-      });
-      if (!response.ok) throw new Error('Failed to join group');
-      const updatedGroup = await response.json();
-      setGroups(prev => 
-        prev.map(group => group.id === groupId ? updatedGroup : group)
-      );
-    } catch (error) {
-      Alert.alert('Error', 'Failed to join group');
-    }
-  };
-
-  const handleSaveEdit = async () => {
-    try {
-      const response = await fetch(baseUrl + `groups/${selectedGroup.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editData)
-      });
-      if (!response.ok) throw new Error('Failed to update group');
-      const updatedGroup = await response.json();
-      setGroups(prev => 
-        prev.map(group => group.id === selectedGroup.id ? updatedGroup : group)
-      );
-      setEditModalVisible(false);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update group');
-    }
-  };
-
-  const filteredGroups = groups.filter(group => 
-    group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    group.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const renderGroup = (group) => (
+    <TouchableOpacity key={group.id} style={styles.groupItem}>
+      <Image source={group.image} style={styles.groupImage} />
+      <View style={styles.groupInfo}>
+        <View style={styles.groupHeader}>
+          <Text style={styles.groupName}>{group.name}</Text>
+          <Text style={styles.dateText}>{group.date}</Text>
+        </View>
+        <View style={styles.messagePreview}>
+          <Text style={styles.authorText}>
+            {group.lastMessage.author}: {group.lastMessage.content}
+          </Text>
+          {group.unreadCount > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadText}>{group.unreadCount}</Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.membersText}>{group.members} Members</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Alumni Groups</Text>
-        <TouchableOpacity 
-          style={styles.createButton}
-          onPress={() => setCreateModalVisible(true)}
-        >
-          <Icon name="add" size={24} color={colors.white} />
-          <Text style={styles.buttonText}>Create New Group</Text>
+        <TouchableOpacity>
+          <Ionicons name="menu" size={28} color="#000" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Community Groups</Text>
+        <View style={styles.notificationContainer}>
+          <TouchableOpacity>
+            <Ionicons name="notifications-outline" size={24} color="#000" />
+          </TouchableOpacity>
+          <View style={styles.notificationBadge} />
+        </View>
       </View>
 
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search Groups"
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#666" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search in Messages"
+          placeholderTextColor="#999"
+        />
+      </View>
 
-      <FlatList
-        data={filteredGroups}
-        renderItem={({ item }) => (
-          <GroupCard
-            group={item}
-            onView={() => {
-              setSelectedGroup(item);
-              setModalVisible(true);
-            }}
-            onEdit={() => {
-              setSelectedGroup(item);
-              setEditData({
-                upcomingEvents: item.upcomingEvents || '',
-                discussions: item.recentDiscussions || '',
-                jobPostings: item.jobPostings || ''
-              });
-              setEditModalVisible(true);
-            }}
-            onDelete={handleDeleteGroup}
-            onJoin={handleJoinGroup}
-          />
-        )}
-        keyExtractor={item => item.id}
-      />
+      {/* Groups List */}
+      <ScrollView style={styles.groupsList}>
+        {groups.map(group => renderGroup(group))}
+      </ScrollView>
 
-      <CreateGroup
-        visible={isCreateModalVisible}
-        onClose={() => setCreateModalVisible(false)}
-        onAdd={handleAddGroup}
-      />
-
-      {/* View Modal */}
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {selectedGroup && (
-              <ScrollView>
-                <Text style={styles.modalTitle}>{selectedGroup.name}</Text>
-                <Text style={styles.modalText}>Description: {selectedGroup.description}</Text>
-                <Text style={styles.modalText}>Members: {selectedGroup.memberCount || 0}</Text>
-                <Text style={styles.modalText}>Events: {selectedGroup.upcomingEvents || 'None'}</Text>
-                <Text style={styles.modalText}>Discussions: {selectedGroup.recentDiscussions || 'None'}</Text>
-                <Text style={styles.modalText}>Jobs: {selectedGroup.jobPostings || 'None'}</Text>
-              </ScrollView>
-            )}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Edit Modal */}
-      <Modal
-        visible={editModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setEditModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TextInput
-              style={styles.input}
-              placeholder="Upcoming Events"
-              value={editData.upcomingEvents}
-              onChangeText={text => setEditData(prev => ({...prev, upcomingEvents: text}))}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Discussions"
-              value={editData.discussions}
-              onChangeText={text => setEditData(prev => ({...prev, discussions: text}))}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Job Postings"
-              value={editData.jobPostings}
-              onChangeText={text => setEditData(prev => ({...prev, jobPostings: text}))}
-            />
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setEditModalVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.saveButton]}
-                onPress={handleSaveEdit}
-              >
-                <Text style={styles.buttonText}>Save</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* New Group Button */}
+      <TouchableOpacity style={styles.newGroupButton}>
+        <Text style={styles.newGroupText}>New Group</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -290,144 +128,122 @@ const Groups = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  createButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.secondary,
-    padding: 8,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: colors.white,
-    marginLeft: 8,
-  },
-  searchInput: {
-    margin: 16,
-    padding: 8,
-    backgroundColor: colors.white,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.divider,
-  },
-  card: {
-    backgroundColor: colors.white,
-    margin: 8,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  groupName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  description: {
-    color: 'gray',
-    marginTop: 4,
-  },
-  categoryChip: {
-    backgroundColor: colors.secondary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 16,
-  },
-  categoryText: {
-    color: colors.white,
-    fontSize: 12,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
-  stat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statText: {
-    marginLeft: 4,
-    color: 'gray',
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.divider,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: colors.white,
-    margin: 20,
-    padding: 20,
-    borderRadius: 8,
-    elevation: 5,
-  },
-  modalTitle: {
+  headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
   },
-  modalText: {
-    marginBottom: 8,
+  notificationContainer: {
+    position: 'relative',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.divider,
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
+  notificationBadge: {
+    position: 'absolute',
+    right: -4,
+    top: -4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#E67E4D',
   },
-  modalActions: {
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 16,
+    padding: 12,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 25,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 16,
+  },
+  groupsList: {
+    flex: 1,
+  },
+  groupItem: {
+    flexDirection: 'row',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  groupImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  groupInfo: {
+    flex: 1,
+  },
+  groupHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  modalButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    marginHorizontal: 8,
-  },
-  cancelButton: {
-    backgroundColor: 'gray',
-  },
-  saveButton: {
-    backgroundColor: colors.secondary,
-  },
-  closeButton: {
-    backgroundColor: colors.secondary,
-    padding: 12,
-    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 16,
+    marginBottom: 4,
   },
-  closeButtonText: {
-    color: colors.white,
+  groupName: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  messagePreview: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  authorText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  unreadBadge: {
+    backgroundColor: '#E67E4D',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unreadText: {
+    color: '#fff',
+    fontSize: 12,
     fontWeight: 'bold',
+  },
+  membersText: {
+    fontSize: 14,
+    color: '#27174D',
+    fontWeight: '500',
+  },
+  newGroupButton: {
+    backgroundColor: '#E67E4D',
+    margin: 16,
+    padding: 16,
+    borderRadius: 25,
+    alignItems: 'center',
+  },
+  newGroupText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
-export default Groups;
+export default CommunityGroupsScreen;
