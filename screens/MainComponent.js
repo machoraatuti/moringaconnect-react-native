@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { View, ActivityIndicator, TouchableOpacity, Text, Alert } from 'react-native';
 
 // Screens
+import LandingScreen from './LandingScreen';
 import Home from './HomeScreen';
 import UserRegistration from './UserRegistrationScreen';
 import Profile from './ProfileScreen';
@@ -17,6 +18,7 @@ import Users from '../components/Users';
 import Messages from './MessageScreen';
 import Search from './SearchScreen';
 import Settings from './SettingsScreen';
+import AlumniDirectory from './AlumniDirectoryScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -117,6 +119,28 @@ const AdminStack = () => (
  </Stack.Navigator>
 );
 
+//Landing Stack
+const LandingStack = () => {
+  return(
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Welcome"
+        component={LandingScreen}
+        options={{
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: "#3F51B5"
+          },
+          headerTintColor: "#FFFFFF",
+          headerTitleStyle: {
+            fontWeight: "bold"
+          }
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
 const MainComponent = () => {
  const { user, isLoading } = useSelector((state) => state.auth);
  const isAdmin = user?.role === 'admin';
@@ -181,6 +205,12 @@ const MainComponent = () => {
        }
      })}
    >
+
+     <Drawer.Screen 
+        name="Landing"
+        component={LandingStack}
+     />
+
      <Drawer.Screen
        name="Main"
        component={BottomTabs}
@@ -201,6 +231,26 @@ const MainComponent = () => {
          },
        })}
      />
+
+<Drawer.Screen
+    name="Alumni Directory"
+    component={AlumniDirectory}
+    options={({ navigation }) => ({
+        drawerIcon: ({ color }) => (
+            <Icon name="folder" type="font-awesome" size={24} color={color} />
+        ),
+        headerRight: () => (
+            <TouchableOpacity 
+                onPress={() => alert("Notifications clicked!")} 
+                style={{ marginRight: 15 }}
+            >
+                <Icon name="bell" type="font-awesome" color="#F05A28" size={22} />
+            </TouchableOpacity>
+        ),
+        headerTitleAlign: "center", // Keep title centered
+    })}
+/>
+
 
      <Drawer.Screen
        name="Events"
