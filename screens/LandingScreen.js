@@ -1,50 +1,48 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Text} from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const LandingScreen = () => {
 
-    return(
-        <ScrollView contentContainerstyle={styles.container}>
-            {/*Sign In crad */}
-            <TouchableOpacity style={styles.cardContainer}>
+    const navigation = useNavigation();
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            {/* Sign In Card */}
+            <TouchableOpacity 
+            style={styles.cardContainer}
+            activeOpacity={0.8}
+            >
                 <ImageBackground
                     source={require("../assets/images/explore-card-bg.jpeg")}
                     imageStyle={styles.imageStyle}
                     style={styles.imageBackground}
                 >
-                    <View style={[styles.overlay,styles.signupCard]}>
-                        <Text style={styles.cardTitle}>
-                            Sign Up / Login
-                        </Text>
-                        <Text style={styles.cardDescription}>
-                            Hey Alumni!
-                        </Text>
-                        <Text style={styles.cardDescription}>
-                            Create your account to join Moringa Connect
-                        </Text>
-                        <Text style={styles.cardDescription}>
-                            Don't forget to Login.
-                        </Text>
+                    <View style={[styles.overlay, styles.signupCard]}>
+                        <Text style={styles.cardTitle}>Sign Up / Login</Text>
+                        <Text style={styles.cardDescription}>Hey Alumni!</Text>
+                        <Text style={styles.cardDescription}>Create your account to join Moringa Connect</Text>
+                        <Text style={styles.cardDescription}>Don't forget to Login.</Text>
                     </View>
-                </ImageBackground> 
+                </ImageBackground>
             </TouchableOpacity>
 
-            {/*Explore crad */}
-            <TouchableOpacity style={styles.cardContainer}>
+            {/* Explore Card */}
+            <TouchableOpacity 
+                style={styles.cardContainer}
+                onPress={()=> navigation.navigate("Search")}
+                activeOpacity={0.8}
+            >
                 <ImageBackground
                     source={require("../assets/images/explore-card-bg.jpeg")}
                     imageStyle={styles.imageStyle}
                     style={styles.imageBackground}
                 >
-                    <View style={[styles.overlay,styles.exploreCard]}>
-                        <Text style={styles.cardTitle}>
-                            Explore
-                        </Text>
-                        <Text style={styles.cardDescription}>
-                             Moringa Connect offers a variety of features!
-                        </Text>
+                    <View style={[styles.overlay, styles.exploreCard]}>
+                        <Text style={styles.cardTitle}>Explore</Text>
+                        <Text style={styles.cardDescription}>Moringa Connect offers a variety of features!</Text>
                     </View>
-                </ImageBackground> 
+                </ImageBackground>
             </TouchableOpacity>
         </ScrollView>
     );
@@ -53,42 +51,43 @@ const LandingScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        padding: 20,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#FFE8E0"
+        paddingVertical: 50, // Adjust for spacing
+        backgroundColor: "#f5f5f5",
     },
     cardContainer: {
         width: "90%",
         borderRadius: 15,
         marginVertical: 20,
+        alignItems: "center", // Ensure card content is centered
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 3},
+        shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
         elevation: 5,
-        overflow: "hidden"
+        overflow: "hidden",
     },
     imageStyle: {
-        resizeMode: "cover"
+        resizeMode: "cover",
     },
     imageBackground: {
         width: "100%",
-        justifyContent: "center"
+        justifyContent: "center",
     },
     overlay: {
         padding: 20,
         borderRadius: 15,
         alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.4)"// semi-transparen
+        backgroundColor: "rgba(0, 0, 0, 0.4)", // semi-transparent
     },
     signupCard: {
-        backgroundColor: "rgba(240, 90, 40, 0.8)",//Orange with transparency
+        backgroundColor: "rgba(240, 90, 40, 0.8)", // Orange with transparency
         padding: 30,
     },
     exploreCard: {
-        backgroundColor: "rgba(10, 31, 68, 0.8)",//Blue with transparency
-        padding: 60
+        backgroundColor: "rgba(10, 31, 68, 0.8)", // Blue with transparency
+        padding: 60,
     },
     cardTitle: {
         fontSize: 22,
@@ -100,8 +99,8 @@ const styles = StyleSheet.create({
     cardDescription: {
         fontSize: 16,
         color: "#f9f9f9",
-        textAlign: "center"
-    }, 
+        textAlign: "center",
+    },
 });
 
 export default LandingScreen;

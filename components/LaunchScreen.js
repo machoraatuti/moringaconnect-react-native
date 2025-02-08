@@ -15,7 +15,7 @@ const LaunchScreen = () => {
         <View style={styles.heroContainer}>
           <View style={styles.heroImageDescription}>
             <Text style={styles.heroTitle}>
-              Moringa Aumni Connect
+              Moringa Alumni Connect
             </Text> 
             <Text style={styles.heroText}>
               Where Moringa Tech Graduates Reunite, Grow and Innovate Together.

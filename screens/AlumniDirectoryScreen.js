@@ -140,7 +140,7 @@ const AlumniDirectory = ({ navigation }) => {
                                 <Icon 
                                     name="comment"
                                     type="font-awesome"
-                                    size={18}
+                                    size={28}
                                     color={"#007bff"}
                                 />
                             </TouchableOpacity>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         padding: 20,
-        backgroundColor: "#FFE8E0",
+        backgroundColor: "#f5f5f5",
     },
     alumniCard: {
         paddingBottom: 15,  
@@ -200,11 +200,11 @@ const styles = StyleSheet.create({
     },
     messageContainer: {
         position: "absolute",
-        right: 0,
-        bottom: 10,
+        right: 10,
+        bottom: -5
     },
     messageButton: {
-        padding: 5,
+        paddingTop: 50,
     }
 });
 
