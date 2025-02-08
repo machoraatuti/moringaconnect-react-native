@@ -8,7 +8,6 @@ import { View, ActivityIndicator, TouchableOpacity, Text, Alert } from 'react-na
 
 // Screens
 import LandingScreen from './LandingScreen';
-import LandingScreen from './LandingScreen';
 import Home from './HomeScreen';
 import UserRegistration from './UserRegistrationScreen';
 import Profile from './ProfileScreen';
