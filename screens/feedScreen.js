@@ -10,7 +10,7 @@ const FeedScreen = () => {
       role: 'Designer (UI/UX)',
       period: '2024-2025',
       content: 'Insightful event held Kenya Computer Club on Importance of Virtual Safety',
-      image: require('../assets/event-image-1.jpg'),
+      image: require('../assets/images/hiking.jpg'),
       timeAgo: '',
     },
     {
@@ -18,7 +18,7 @@ const FeedScreen = () => {
       author: 'Horace Mwaura',
       role: 'Software Developer at Labs BTech(CSE) 2010',
       content: 'Insightful event held Kenya Computer Club on Importance Artificial Intelligence.',
-      image: require('../assets/event-image-2.jpg'),
+      image: require('../assets/images/cybersecurity.jpg'),
       timeAgo: '3d',
     },
   ];
@@ -27,7 +27,7 @@ const FeedScreen = () => {
     <View key={post.id} style={styles.postContainer}>
       <View style={styles.postHeader}>
         <Image
-          source={require('../assets/profile-placeholder.jpg')}
+          source={require('../assets/images/frontend.jpg')}
           style={styles.profileImage}
         />
         <View style={styles.authorInfo}>
@@ -90,7 +90,7 @@ const FeedScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
           <Image
-            source={require('../assets/profile-placeholder.jpg')}
+            source={require('../assets/images/avatar-dir-1.jpeg')}
             style={styles.navProfile}
           />
         </TouchableOpacity>

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,76 +7,101 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  ActivityIndicator,
   SafeAreaView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { 
-  fetchEvents, 
-  selectAllEvents, 
-  selectEventsLoading, 
-  selectEventsError 
-} from '../features/eventSlice/eventSlice';
+
+const mockEvents = [
+  {
+    id: 1,
+    title: 'Tech Career Fair 2024',
+    description: 'Join us for a day of networking with top tech companies. Meet recruiters, attend workshops, and explore job opportunities.',
+    date: 'March 15, 2024',
+    time: '9:00 AM - 4:00 PM',
+    location: 'Nairobi Garage, Kilimani',
+    status: 'upcoming',
+    image: require('../assets/images/cybersecurity.jpg'),
+    attendance: 150,
+    maxCapacity: 200
+  },
+  {
+    id: 2,
+    title: 'Alumni Networking Night',
+    description: 'An evening of networking and sharing experiences with fellow alumni. Light refreshments will be served.',
+    date: 'March 20, 2024',
+    time: '6:00 PM - 9:00 PM',
+    location: 'Moringa School, Ngong Road',
+    status: 'upcoming',
+    image: require('../assets/images/graduation.jpg'),
+    attendance: 80,
+    maxCapacity: 100
+  },
+  {
+    id: 3,
+    title: 'Web Development Workshop',
+    description: 'Learn the latest web development technologies and best practices from industry experts.',
+    date: 'April 5, 2024',
+    time: '10:00 AM - 3:00 PM',
+    location: 'Virtual Event',
+    status: 'upcoming',
+    image: require('../assets/images/hiking.jpg'),
+    attendance: 200,
+    maxCapacity: 300
+  },
+  {
+    id: 4,
+    title: 'Data Science Bootcamp',
+    description: 'Intensive one-day bootcamp covering data analysis, machine learning, and practical applications.',
+    date: 'March 25, 2024',
+    time: '9:00 AM - 5:00 PM',
+    location: 'iHub, Senteu Plaza',
+    status: 'upcoming',
+    image: require('../assets/images/bootcamp.jpg'),
+    attendance: 45,
+    maxCapacity: 50
+  }
+];
 
 const colors = {
-  primary: "#E67E4D",     // Orange theme color
-  secondary: "#27174D",   // Dark purple for text
-  background: "#FFFFFF",  // White background
-  grey: "#666666",       // Grey for secondary text
-  lightGrey: "#EEEEEE",  // Light grey for borders
+  primary: "#E67E4D",
+  secondary: "#27174D",
+  background: "#FFFFFF",
+  grey: "#666666",
+  lightGrey: "#EEEEEE",
 };
 
-const getStatusColor = (status) => {
-  const statusColors = {
-    upcoming: colors.primary,
-    completed: "#4CAF50",
-    cancelled: "#F44336",
-    rescheduled: "#FFC107"
-  };
-  return statusColors[status] || colors.primary;
-};
-
-const UserEvents = () => {
-  const dispatch = useDispatch();
-  const events = useSelector(selectAllEvents);
-  const loading = useSelector(selectEventsLoading);
-  const error = useSelector(selectEventsError);
+const EventsScreen = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  useEffect(() => {
-    dispatch(fetchEvents());
-  }, [dispatch]);
-
-  const EventCard = ({ event }) => (
-    <TouchableOpacity 
-      style={styles.card}
+  const renderEventCard = (event) => (
+    <TouchableOpacity
+      key={event.id}
+      style={styles.eventCard}
       onPress={() => setSelectedEvent(event)}
     >
       <Image 
-        source={{ uri: event.image }}
-        style={styles.cardImage}
+        source={event.image}
+        style={styles.eventImage}
       />
-      <View style={styles.cardContent}>
-        <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(event.status)}15` }]}>
-          <Text style={[styles.statusText, { color: getStatusColor(event.status) }]}>
-            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-          </Text>
-        </View>
-
-        <Text style={styles.eventTitle}>{event.title}</Text>
-        <Text style={styles.description} numberOfLines={2}>{event.description}</Text>
-
-        <View style={styles.detailsContainer}>
-          <View style={styles.detailRow}>
-            <Ionicons name="calendar-outline" size={18} color={colors.primary} />
-            <Text style={styles.detailText}>{event.date}</Text>
+      <View style={styles.eventContent}>
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateText}>{event.date}</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {event.attendance}/{event.maxCapacity} spots
+            </Text>
           </View>
+        </View>
+        
+        <Text style={styles.eventTitle}>{event.title}</Text>
+        
+        <View style={styles.eventDetails}>
           <View style={styles.detailRow}>
-            <Ionicons name="time-outline" size={18} color={colors.primary} />
+            <Ionicons name="time-outline" size={16} color={colors.primary} />
             <Text style={styles.detailText}>{event.time}</Text>
           </View>
           <View style={styles.detailRow}>
-            <Ionicons name="location-outline" size={18} color={colors.primary} />
+            <Ionicons name="location-outline" size={16} color={colors.primary} />
             <Text style={styles.detailText}>{event.location}</Text>
           </View>
         </View>
@@ -85,42 +109,36 @@ const UserEvents = () => {
     </TouchableOpacity>
   );
 
-  const LoadingScreen = () => (
-    <View style={styles.centerContainer}>
-      <ActivityIndicator size="large" color={colors.primary} />
-    </View>
-  );
-
-  const ErrorScreen = () => (
-    <View style={styles.centerContainer}>
-      <Text style={styles.errorText}>{error}</Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#000" />
+          <Ionicons name="menu" size={28} color="#FFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Events</Text>
         <TouchableOpacity>
-          <Ionicons name="notifications-outline" size={24} color="#000" />
+          <Ionicons name="notifications-outline" size={24} color="#FFF" />
         </TouchableOpacity>
       </View>
 
-      {loading ? <LoadingScreen /> : error ? <ErrorScreen /> : (
-        <ScrollView style={styles.content}>
-          <Text style={styles.sectionTitle}>Upcoming Events</Text>
-          <View style={styles.eventsList}>
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </View>
-        </ScrollView>
-      )}
+      {/* Content */}
+      <ScrollView style={styles.content}>
+        <View style={styles.filterContainer}>
+          <TouchableOpacity style={[styles.filterButton, styles.activeFilter]}>
+            <Text style={styles.activeFilterText}>Upcoming</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterButton}>
+            <Text style={styles.filterText}>Past Events</Text>
+          </TouchableOpacity>
+        </View>
 
+        <View style={styles.eventsList}>
+          {mockEvents.map(event => renderEventCard(event))}
+        </View>
+      </ScrollView>
+
+      {/* Event Details Modal */}
       <Modal
         visible={!!selectedEvent}
         animationType="slide"
@@ -129,65 +147,52 @@ const UserEvents = () => {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity 
-              style={styles.closeButton}
               onPress={() => setSelectedEvent(null)}
+              style={styles.closeButton}
             >
               <Ionicons name="close" size={24} color="#000" />
             </TouchableOpacity>
-            <Text style={styles.modalHeaderTitle}>Event Details</Text>
-            <View style={styles.modalHeaderPlaceholder} />
+            <Text style={styles.modalTitle}>Event Details</Text>
+            <View style={{ width: 24 }} />
           </View>
 
-          <ScrollView>
-            {selectedEvent && (
+          {selectedEvent && (
+            <ScrollView>
+              <Image 
+                source={selectedEvent.image}
+                style={styles.modalImage}
+              />
               <View style={styles.modalContent}>
-                <Image 
-                  source={{ uri: selectedEvent.image }}
-                  style={styles.modalImage}
-                />
-                
-                <View style={styles.modalBody}>
-                  <View style={[styles.statusBadge, { 
-                    backgroundColor: `${getStatusColor(selectedEvent.status)}15` 
-                  }]}>
-                    <Text style={[styles.statusText, { 
-                      color: getStatusColor(selectedEvent.status) 
-                    }]}>
-                      {selectedEvent.status}
+                <Text style={styles.modalEventTitle}>{selectedEvent.title}</Text>
+                <Text style={styles.modalDescription}>{selectedEvent.description}</Text>
+
+                <View style={styles.modalDetailCard}>
+                  <View style={styles.modalDetailRow}>
+                    <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+                    <Text style={styles.modalDetailText}>{selectedEvent.date}</Text>
+                  </View>
+                  <View style={styles.modalDetailRow}>
+                    <Ionicons name="time-outline" size={20} color={colors.primary} />
+                    <Text style={styles.modalDetailText}>{selectedEvent.time}</Text>
+                  </View>
+                  <View style={styles.modalDetailRow}>
+                    <Ionicons name="location-outline" size={20} color={colors.primary} />
+                    <Text style={styles.modalDetailText}>{selectedEvent.location}</Text>
+                  </View>
+                  <View style={styles.modalDetailRow}>
+                    <Ionicons name="people-outline" size={20} color={colors.primary} />
+                    <Text style={styles.modalDetailText}>
+                      {selectedEvent.attendance} attending out of {selectedEvent.maxCapacity} spots
                     </Text>
                   </View>
-
-                  <Text style={styles.modalEventTitle}>{selectedEvent.title}</Text>
-                  <Text style={styles.modalDescription}>{selectedEvent.description}</Text>
-
-                  <View style={styles.detailsGrid}>
-                    <View style={styles.detailBlock}>
-                      <Text style={styles.detailLabel}>Date</Text>
-                      <Text style={styles.detailValue}>{selectedEvent.date}</Text>
-                    </View>
-                    <View style={styles.detailBlock}>
-                      <Text style={styles.detailLabel}>Time</Text>
-                      <Text style={styles.detailValue}>{selectedEvent.time}</Text>
-                    </View>
-                    <View style={styles.detailBlock}>
-                      <Text style={styles.detailLabel}>Location</Text>
-                      <Text style={styles.detailValue}>{selectedEvent.location}</Text>
-                    </View>
-                    <View style={styles.detailBlock}>
-                      <Text style={styles.detailLabel}>Attendance</Text>
-                      <Text style={styles.detailValue}>
-                        {selectedEvent.attendance}/{selectedEvent.maxCapacity}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <TouchableOpacity style={styles.registerButton}>
-                    <Text style={styles.registerButtonText}>Register for Event</Text>
-                  </TouchableOpacity>
                 </View>
+
+                <TouchableOpacity style={styles.registerButton}>
+                  <Text style={styles.registerButtonText}>Register Now</Text>
+                </TouchableOpacity>
               </View>
-            )}
-          </ScrollView>
+            </ScrollView>
+          )}
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
@@ -214,66 +219,77 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: colors.secondary,
+  filterContainer: {
+    flexDirection: 'row',
     padding: 16,
+    gap: 12,
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  filterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
-  errorText: {
-    color: '#F44336',
-    fontSize: 16,
+  activeFilter: {
+    backgroundColor: colors.primary,
+  },
+  filterText: {
+    color: colors.primary,
+  },
+  activeFilterText: {
+    color: colors.background,
   },
   eventsList: {
     padding: 16,
   },
-  card: {
+  eventCard: {
     backgroundColor: colors.background,
     borderRadius: 12,
     marginBottom: 16,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  cardImage: {
-    height: 180,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+  eventImage: {
+    width: '100%',
+    height: 160,
   },
-  cardContent: {
+  eventContent: {
     padding: 16,
   },
-  statusBadge: {
-    alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    marginBottom: 12,
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
-  statusText: {
-    fontSize: 14,
+  dateText: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  badge: {
+    backgroundColor: `${colors.primary}15`,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  badgeText: {
+    color: colors.primary,
+    fontSize: 12,
     fontWeight: '500',
   },
   eventTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: colors.secondary,
     marginBottom: 8,
   },
-  description: {
-    color: colors.grey,
-    marginBottom: 16,
-    lineHeight: 20,
-  },
-  detailsContainer: {
-    gap: 8,
+  eventDetails: {
+    gap: 4,
   },
   detailRow: {
     flexDirection: 'row',
@@ -282,6 +298,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     color: colors.grey,
+    fontSize: 14,
   },
   modalContainer: {
     flex: 1,
@@ -295,50 +312,50 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.lightGrey,
   },
-  modalHeaderTitle: {
+  modalTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: colors.secondary,
   },
-  modalHeaderPlaceholder: {
-    width: 24,
-  },
   modalImage: {
-    height: 240,
     width: '100%',
+    height: 240,
   },
-  modalBody: {
+  modalContent: {
     padding: 16,
   },
   modalEventTitle: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: colors.secondary,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   modalDescription: {
+    fontSize: 16,
     color: colors.grey,
     lineHeight: 24,
     marginBottom: 24,
   },
-  detailsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  modalDetailCard: {
+    backgroundColor: colors.background,
+    borderRadius: 12,
+    padding: 16,
+    gap: 12,
     marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  detailBlock: {
-    width: '50%',
-    padding: 8,
+  modalDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  detailLabel: {
-    fontSize: 14,
-    color: colors.grey,
-    marginBottom: 4,
-  },
-  detailValue: {
+  modalDetailText: {
     fontSize: 16,
     color: colors.secondary,
-    fontWeight: '500',
   },
   registerButton: {
     backgroundColor: colors.primary,
@@ -353,4 +370,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserEvents;
+export default EventsScreen;

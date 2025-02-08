@@ -25,7 +25,7 @@ const ProfileScreen = ({ navigation }) => {
         {/* Profile Image */}
         <View style={styles.profileImageContainer}>
           <Image
-            source={require('../assets/profile-placeholder.png')}
+            source={require('../assets/images/avatar-dir-1.jpeg')}
             style={styles.profileImage}
           />
         </View>
