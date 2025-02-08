@@ -43,7 +43,7 @@ const MentorshipScreen = () => {
         
         <View style={styles.imageContainer}>
           <Image
-            source={require('../assets/images/mentorship.jpg')}
+            source={require('../assets/images/frontend.jpg')}
             style={styles.mentorImage}
             resizeMode="cover"
           />
