@@ -94,11 +94,11 @@ const ConnectionsScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#000" />
+          {/* <Ionicons name="menu" size={28} color="#000" /> */}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Connections</Text>
         <TouchableOpacity>
-          <Ionicons name="notifications-outline" size={24} color="#000" />
+          <Ionicons name="notifications-outline" size={24} color="#E67E4D" />
         </TouchableOpacity>
       </View>
 
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#E67E4D',
+    backgroundColor: '(rgba(10, 31, 68, 0.8))',
   },
   headerTitle: {
     fontSize: 20,

@@ -65,6 +65,7 @@ const AlumniStack = () => (
   </Stack.Navigator>
 );
 
+
 const ConnectionsStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ConnectionsMain" component={Connections} />
@@ -72,7 +73,7 @@ const ConnectionsStack = () => (
       name="ConnectionProfile" 
       component={ConnectionProfile}
       options={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: { backgroundColor: '#E67E4D' },
         headerTintColor: '#fff'
       }}
@@ -302,7 +303,7 @@ const CustomDrawerContent = (props) => {
 
       <TouchableOpacity 
         style={styles.drawerItem}
-        onPress={() => props.navigation.navigate('Main')}
+        onPress={() => props.navigation.navigate('Home')}
       >
         <Icon name="home" type="font-awesome" size={24} color="#666" />
         <Text style={styles.drawerItemText}>Home</Text>
@@ -473,7 +474,7 @@ const MainComponent = () => {
         }
       })}
     >
-      <Drawer.Screen name="Main"
+      <Drawer.Screen name="Home"
         component={BottomTabs}
         options={{
           title: activeRouteName,
