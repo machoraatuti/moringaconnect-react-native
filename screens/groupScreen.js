@@ -91,12 +91,12 @@ const CommunityGroupsScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#000" />
+          {/* <Ionicons name="menu" size={28} color="#000" /> */}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Community Groups</Text>
         <View style={styles.notificationContainer}>
           <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={24} color="#000" />
+            <Ionicons name="notifications-outline" size={24} color="#E67E4D" />
           </TouchableOpacity>
           <View style={styles.notificationBadge} />
         </View>
@@ -137,10 +137,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    backgroundColor: "(rgba(10, 31, 68, 0.8))"
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: "#fff"
   },
   notificationContainer: {
     position: 'relative',
