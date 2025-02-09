@@ -52,10 +52,9 @@ const MessagesScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-          <Ionicons name="menu" size={28} color="#000" />
-        </TouchableOpacity>
+        
         <Text style={styles.headerTitle}>Messages</Text>
+           
         <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
           <Ionicons name="notifications-outline" size={24} color="#000" />
         </TouchableOpacity>
@@ -113,8 +112,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: '#E67E4D',
+    paddingLeft : 140,
+    padding : 16,
+     backgroundColor: "rgba(10, 31, 68, 0.8)",
+     
   },
   headerTitle: {
     fontSize: 20,
