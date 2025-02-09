@@ -44,6 +44,7 @@ import MentorProfile from '../screens/MentorProfileScreen';
 import NewsUpdates from '../screens/NewsScreen';
 import NewsDetails from '../screens/NewsDetailsScreen';
 import EventsScreen from '../screens/EventsScreen';
+import MessagesScreen from '../screens/MessagesScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -255,7 +256,7 @@ const BottomTabs = () => {
       />
       <Tab.Screen 
         name="Messages" 
-        component={MessagesStack} 
+        component={MessagesScreen} 
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
@@ -503,7 +504,16 @@ const MainComponent = () => {
         name="Connections" 
         component={ConnectionsStack}
         options={{
-          headerShown: true
+          headerShown: true,
+          headerLeft: () => (
+            <Icon
+              name="menu"
+              size={24}
+              color="white"
+              onPress={() => navigation.toggleDrawer()}
+              style={{ marginLeft: 10 }}
+            />
+          )
         }}
       />
       <Drawer.Screen 

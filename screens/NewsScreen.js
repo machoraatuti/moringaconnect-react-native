@@ -14,7 +14,7 @@ const NewsScreen = () => {
         {/* First news item */}
         <View style={styles.newsItem}>
           <Image
-            source={{ uri: 'https://your-image-url-1.com' }}  // Replace with actual image URL
+            source={require('../assets/images/bootcamp.jpg')}  // Replace with actual image URL
             style={styles.newsImage}
           />
           <Text style={styles.newsText}>
@@ -29,7 +29,7 @@ const NewsScreen = () => {
         {/* Second news item */}
         <View style={styles.newsItem}>
           <Image
-            source={{ uri: 'https://your-image-url-2.com' }}  // Replace with actual image URL
+            source={require('../assets/images/frontend.jpg')}  // Replace with actual image URL
             style={styles.newsImage}
           />
           <Text style={styles.newsText}>
