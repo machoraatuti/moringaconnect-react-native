@@ -14,6 +14,7 @@ import {
   Image
 } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 
 
 // Screens
@@ -417,6 +418,7 @@ const CustomDrawerContent = (props) => {
 // Main Component
 const MainComponent = () => {
   const { user, isLoading } = useSelector((state) => state.auth);
+  const navigation = useNavigation();
   const isAdmin = user?.role === 'admin';
   const [activeRouteName, setActiveRouteName] = React.useState('Home');
 
@@ -504,16 +506,7 @@ const MainComponent = () => {
         name="Connections" 
         component={ConnectionsStack}
         options={{
-          headerShown: true,
-          headerLeft: () => (
-            <Icon
-              name="menu"
-              size={24}
-              color="white"
-              onPress={() => navigation.toggleDrawer()}
-              style={{ marginLeft: 10 }}
-            />
-          )
+          headerShown: true
         }}
       />
       <Drawer.Screen 

@@ -22,11 +22,11 @@ const SearchScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#000" />
+          {/* <Ionicons name="menu" size={28} color="#000" /> */}
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Search</Text>
+        {/* <Text style={styles.headerTitle}>Search</Text> */}
         <TouchableOpacity>
-          <Ionicons name="notifications-outline" size={24} color="#000" />
+          {/* <Ionicons name="notifications-outline" size={24} color="#000" /> */}
         </TouchableOpacity>
       </View>
 
