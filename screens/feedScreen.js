@@ -72,7 +72,7 @@ const FeedScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#000" />
+          {/* <Ionicons name="menu" size={28} color="#000" /> */}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Feed</Text>
         <View style={styles.placeholder} />
@@ -118,10 +118,13 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    backgroundColor: "(rgba(10, 31, 68, 0.8))"
+
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: "#fff"
   },
   placeholder: {
     width: 28,

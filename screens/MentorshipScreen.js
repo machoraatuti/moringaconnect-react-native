@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const MentorshipScreen = () => {
@@ -54,12 +54,9 @@ const MentorshipScreen = () => {
         </View>
         <Text style={styles.headerTitle}>Mentorship Program</Text>
         <TouchableOpacity style={styles.headerRight}>
-          <Icon
-            name="bell"
-            type="font-awesome"
-            size={24}
-            color="#000"
-          />
+
+          <Ionicons name="notifications-outline" size={24} color="#E67E4D" />
+
           <View style={styles.notificationBadge} />
         </TouchableOpacity>
       </View>
@@ -108,6 +105,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+    backgroundColor: "(rgba(10, 31, 68, 0.8))"
   },
   headerLeft: {
     flex: 1,
@@ -124,6 +122,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     flex: 2,
     textAlign: 'center',
+    color: "#fff"
   },
   headerRight: {
     flex: 1,

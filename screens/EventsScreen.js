@@ -63,7 +63,7 @@ const mockEvents = [
 ];
 
 const colors = {
-  primary: "#E67E4D",
+  primary: "(rgba(10, 31, 68, 0.8))",
   secondary: "#27174D",
   background: "#FFFFFF",
   grey: "#666666",
@@ -114,11 +114,11 @@ const EventsScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#FFF" />
+          {/* <Ionicons name="menu" size={28} color="#FFF" /> */}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Events</Text>
         <TouchableOpacity>
-          <Ionicons name="notifications-outline" size={24} color="#FFF" />
+          <Ionicons name="notifications-outline" size={24} color="#E67E4D" />
         </TouchableOpacity>
       </View>
 

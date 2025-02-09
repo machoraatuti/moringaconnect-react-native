@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -66,6 +66,7 @@ const AlumniStack = () => (
   </Stack.Navigator>
 );
 
+
 const ConnectionsStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ConnectionsMain" component={Connections} />
@@ -73,7 +74,7 @@ const ConnectionsStack = () => (
       name="ConnectionProfile" 
       component={ConnectionProfile}
       options={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: { backgroundColor: '#E67E4D' },
         headerTintColor: '#fff'
       }}
@@ -255,7 +256,7 @@ const BottomTabs = () => {
       />
       <Tab.Screen 
         name="Messages" 
-        component={MessagesStack} 
+        component={MessagesScreen} 
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
@@ -303,7 +304,7 @@ const CustomDrawerContent = (props) => {
 
       <TouchableOpacity 
         style={styles.drawerItem}
-        onPress={() => props.navigation.navigate('Main')}
+        onPress={() => props.navigation.navigate('Home')}
       >
         <Icon name="home" type="font-awesome" size={24} color="#666" />
         <Text style={styles.drawerItemText}>Home</Text>
@@ -474,7 +475,7 @@ const MainComponent = () => {
         }
       })}
     >
-      <Drawer.Screen name="Main"
+      <Drawer.Screen name="Home"
         component={BottomTabs}
         options={{
           title: activeRouteName,
@@ -503,7 +504,16 @@ const MainComponent = () => {
         name="Connections" 
         component={ConnectionsStack}
         options={{
-          headerShown: true
+          headerShown: true,
+          headerLeft: () => (
+            <Icon
+              name="menu"
+              size={24}
+              color="white"
+              onPress={() => navigation.toggleDrawer()}
+              style={{ marginLeft: 10 }}
+            />
+          )
         }}
       />
       <Drawer.Screen 

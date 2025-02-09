@@ -46,7 +46,9 @@ const NewsScreen = () => {
       </View>
 
       <ScrollView style={styles.newsContent}>
+
         {newsItems.map(item => renderNewsItem(item))}
+
       </ScrollView>
     </View>
   );
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 60,
-    backgroundColor: '#FF7F32',
+    backgroundColor: '(rgba(10, 31, 68, 0.8))',
     justifyContent: 'center',
     alignItems: 'center',
   },

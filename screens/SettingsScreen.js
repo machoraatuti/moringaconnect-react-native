@@ -86,14 +86,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   section: {
-    marginVertical: 12,
+    backgroundColor: "(rgba(10, 31, 68, 0.8))"
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    color: '#f4511e',
+    color: '#fff',
     marginLeft: 16,
-    marginBottom: 8,
+    marginBottom: 10,
+    marginTop: 10,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center"
   },
   settingItem: {
     flexDirection: 'row',

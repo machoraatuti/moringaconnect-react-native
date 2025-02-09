@@ -103,7 +103,7 @@ const JobBoardScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="menu" size={28} color="#000" />
+          {/* <Ionicons name="menu" size={28} color="#000" /> */}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Job Board & Career Support</Text>
       </View>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '(rgba(10, 31, 68, 0.8))',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 16,
+    color: "#fff"
   },
   searchContainer: {
     flexDirection: 'row',
