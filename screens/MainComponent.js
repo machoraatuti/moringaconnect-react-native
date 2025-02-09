@@ -28,7 +28,7 @@ import EventDetails from '../screens/EventDetailsScreen';
 import Groups from '../screens/groupScreen';
 import GroupDetails from '../screens/GroupDetailsScreen';
 import Users from '../components/Users';
-import Messages from '../screens/MessagesScreen';
+import MessagesScreen from '../screens/MessagesScreen';
 import ChatScreen from '../screens/ChatScreen';
 import Search from '../screens/SearchScreen';
 import Settings from '../screens/SettingsScreen';
@@ -45,7 +45,6 @@ import MentorProfile from '../screens/MentorProfileScreen';
 import NewsUpdates from '../screens/NewsScreen';
 import NewsDetails from '../screens/NewsDetailsScreen';
 import EventsScreen from '../screens/EventsScreen';
-import MessagesScreen from '../screens/MessagesScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -181,7 +180,7 @@ const MessagesStack = () => (
       component={ChatScreen}
       options={{
         headerShown: true,
-        headerStyle: { backgroundColor: '#E67E4D' },
+        headerStyle: {  backgroundColor: "rgba(10, 31, 68, 0.8)" },
         headerTintColor: '#fff'
       }}
     />
@@ -257,7 +256,7 @@ const BottomTabs = () => {
       />
       <Tab.Screen 
         name="Messages" 
-        component={MessagesScreen} 
+        component={MessagesStack} 
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (

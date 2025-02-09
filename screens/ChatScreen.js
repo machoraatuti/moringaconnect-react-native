@@ -109,12 +109,7 @@ const ChatScreen = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#000" />
-        </TouchableOpacity>
+        
         
         <TouchableOpacity style={styles.profileInfo}>
           <Image source={chatData.recipient.image} style={styles.profileImage} />

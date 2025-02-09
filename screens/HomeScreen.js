@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
  View,
  Text,
@@ -10,8 +10,17 @@ import {
  SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
+import Animated, {
+ useSharedValue,
+ withSpring,
+ withTiming
+} from 'react-native-reanimated';
 
 const HomeScreen = () => {
+ const navigation = useNavigation();
+ const modalScale = useSharedValue(0);
+
  const batchmates = [
    { 
      id: 1, 
@@ -46,10 +55,14 @@ const HomeScreen = () => {
  const news = [
    {
      id: 1,
+     title: "Latest News",
+     description: "Important update about campus activities",
      image: require('../assets/images/bootcamp.jpg'),
    },
    {
      id: 2,
+     title: "Tech News",
+     description: "New developments in technology",
      image: require('../assets/images/frontend.jpg'),
    },
  ];
@@ -60,7 +73,7 @@ const HomeScreen = () => {
      title: 'Importance of Research Principles',
      subtitle: 'Virtual Auditorium 2',
      date: 'Mon, Dec 24',
-     description: 'Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry\'s',
+       description: 'Join Dr. Sarah Johnson, Lead Data Scientist at Google, for an in-depth discussion on essential research principles in data science. This session will cover experimental design, bias mitigation, statistical significance, and ethical considerations in AI research. The talk will include real-world case studies and practical examples from industry projects.',
      image: require('../assets/images/bootcamp.jpg'),
    },
    {
@@ -68,10 +81,25 @@ const HomeScreen = () => {
      title: 'Forum Discussion',
      subtitle: 'Virtual Auditorium 2',
      date: 'Mon, Dec 24',
-     description: 'Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry\'s',
+      description: 'A platform for Moringa School students to present their innovative tech solutions addressing local challenges. Five selected teams will showcase their projects, including a mobile app for small-scale farmers, an AI-powered healthcare diagnostic tool, and a renewable energy monitoring system. Join us for demonstrations, technical discussions, and networking opportunities.',
      image: require('../assets/images/hiking.jpg'),
    },
  ];
+
+ const showModal = () => {
+   modalScale.value = withSpring(1);
+   setTimeout(() => {
+     modalScale.value = withTiming(0);
+   }, 2000);
+ };
+
+ const onEventPress = (event) => {
+   navigation.navigate('Events', { event });
+ };
+
+ const onNewsPress = (newsItem) => {
+   navigation.navigate('NewsUpdates', { news: newsItem });
+ };
 
  const SectionTitle = ({ title }) => (
    <View style={styles.sectionTitleContainer}>
@@ -82,8 +110,13 @@ const HomeScreen = () => {
 
  return (
    <SafeAreaView style={styles.container}>
+     <Animated.View style={[styles.modal, {
+       transform: [{ scale: modalScale }]
+     }]}>
+       <Text style={styles.modalText}>Successfully connected!</Text>
+     </Animated.View>
+
      <ScrollView style={styles.scrollView}>
-       {/* Search Bar */}
        <View style={styles.searchContainer}>
          <View style={styles.searchBar}>
            <Icon name="search" size={20} color="#666" style={styles.searchIcon} />
@@ -95,17 +128,17 @@ const HomeScreen = () => {
          </View>
        </View>
 
-       {/* Batchmates Section */}
        <View style={styles.section}>
          <SectionTitle title="Connect with your Batchmates" />
          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.batchmateScroll}>
            {batchmates.map((mate) => (
-             <View key={mate.id} style={[styles.batchmateCard, styles.shadowEffect]}>
+             <TouchableOpacity 
+               key={mate.id} 
+               onPress={showModal}
+               style={[styles.batchmateCard, styles.shadowEffect]}
+             >
                <View style={styles.imageContainer}>
-                 <Image
-                   source={mate.image}
-                   style={styles.batchmateImage}
-                 />
+                 <Image source={mate.image} style={styles.batchmateImage} />
                  {mate.hasUpdate && (
                    <View style={styles.updateBadge}>
                      <Icon name="plus" size={12} color="#fff" />
@@ -114,31 +147,38 @@ const HomeScreen = () => {
                </View>
                <Text style={styles.batchmateName}>{mate.name}</Text>
                <Text style={styles.batchmateYear}>{mate.year}</Text>
-             </View>
+             </TouchableOpacity>
            ))}
          </ScrollView>
        </View>
 
-       {/* News Section */}
        <View style={styles.section}>
          <SectionTitle title="News and Updates" />
          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
            {news.map((item) => (
-             <View key={item.id} style={[styles.newsContainer, styles.shadowEffect]}>
-               <Image
-                 source={item.image}
-                 style={styles.newsImage}
-               />
-             </View>
+             <TouchableOpacity
+               key={item.id}
+               onPress={() => onNewsPress(item)} 
+               style={[styles.newsContainer, styles.shadowEffect]}
+             >
+               <Image source={item.image} style={styles.newsImage} />
+               <View style={styles.newsContent}>
+                 <Text style={styles.newsTitle}>{item.title}</Text>
+                 <Text style={styles.newsDescription}>{item.description}</Text>
+               </View>
+             </TouchableOpacity>
            ))}
          </ScrollView>
        </View>
 
-       {/* Events Section */}
        <View style={styles.section}>
          <SectionTitle title="Upcoming Events" />
          {events.map((event) => (
-           <TouchableOpacity key={event.id} style={[styles.eventCard, styles.shadowEffect]}>
+           <TouchableOpacity 
+             key={event.id}
+             onPress={() => onEventPress(event)}
+             style={[styles.eventCard, styles.shadowEffect]}
+           >
              <Image source={event.image} style={styles.eventImage} />
              <View style={styles.eventContent}>
                <Text style={styles.eventTitle}>{event.title}</Text>
@@ -160,6 +200,22 @@ const styles = StyleSheet.create({
  container: {
    flex: 1,
    backgroundColor: '#f5f5f5',
+ },
+ modal: {
+   position: 'absolute',
+   top: '50%',
+   left: '50%',
+   transform: [{translateX: -75}, {translateY: -25}],
+   backgroundColor: '#4CAF50',
+   padding: 15,
+   borderRadius: 8,
+   width: 150,
+   alignItems: 'center',
+   zIndex: 999,
+ },
+ modalText: {
+   color: '#fff',
+   fontSize: 14,
  },
  scrollView: {
    flex: 1,
@@ -241,11 +297,24 @@ const styles = StyleSheet.create({
    marginRight: 16,
    borderRadius: 12,
    overflow: 'hidden',
+   width: 200,
  },
  newsImage: {
-   width: 200,
+   width: '100%',
    height: 150,
    borderRadius: 12,
+ },
+ newsContent: {
+   padding: 8,
+ },
+ newsTitle: {
+   fontSize: 16,
+   fontWeight: '500',
+ },
+ newsDescription: {
+   fontSize: 14,
+   color: '#666',
+   marginTop: 4,
  },
  eventCard: {
    flexDirection: 'row',
