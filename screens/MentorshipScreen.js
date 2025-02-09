@@ -13,13 +13,39 @@ import { useNavigation } from '@react-navigation/native';
 
 const MentorshipScreen = () => {
   const navigation = useNavigation();
+  
+  const mentors = [
+    {
+      id: 1,
+      name: 'Sarah Kimani',
+      role: 'Senior Software Engineer',
+      company: 'Google',
+      experience: '8+ years',
+      expertise: ['Mobile Development', 'Web Development', 'System Design'],
+      image: require('../assets/images/frontend.jpg')
+    }
+  ];
+
+  const renderMentor = (mentor) => (
+    <TouchableOpacity 
+      key={mentor.id}
+      style={styles.mentorCard}
+      onPress={() => navigation.navigate('MentorProfile', { mentor })}
+    >
+      <Image source={mentor.image} style={styles.mentorCardImage} />
+      <View style={styles.mentorInfo}>
+        <Text style={styles.mentorName}>{mentor.name}</Text>
+        <Text style={styles.mentorRole}>{mentor.role}</Text>
+        <Text style={styles.mentorCompany}>{mentor.company}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
@@ -28,10 +54,10 @@ const MentorshipScreen = () => {
         </View>
         <Text style={styles.headerTitle}>Mentorship Program</Text>
         <TouchableOpacity style={styles.headerRight}>
-          <Icon 
-            name="bell" 
-            type="font-awesome" 
-            size={24} 
+          <Icon
+            name="bell"
+            type="font-awesome"
+            size={24}
             color="#000"
           />
           <View style={styles.notificationBadge} />
@@ -58,6 +84,9 @@ const MentorshipScreen = () => {
         <TouchableOpacity style={styles.moreButton}>
           <Text style={styles.moreText}>+more</Text>
         </TouchableOpacity>
+
+        <Text style={styles.sectionTitle}>Available Mentors</Text>
+        {mentors.map(mentor => renderMentor(mentor))}
 
         <TouchableOpacity style={styles.becomeButton}>
           <Text style={styles.becomeButtonText}>Become a Mentor</Text>
@@ -148,6 +177,48 @@ const styles = StyleSheet.create({
   moreText: {
     color: '#F05A28',
     fontSize: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+  },
+  mentorCard: {
+    flexDirection: 'row',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  mentorCardImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 12,
+  },
+  mentorInfo: {
+    flex: 1,
+  },
+  mentorName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  mentorRole: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  mentorCompany: {
+    fontSize: 14,
+    color: '#F05A28',
+    marginTop: 2,
   },
   becomeButton: {
     backgroundColor: '#F05A28',

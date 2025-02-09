@@ -44,6 +44,7 @@ import MentorProfile from '../screens/MentorProfileScreen';
 import NewsUpdates from '../screens/NewsScreen';
 import NewsDetails from '../screens/NewsDetailsScreen';
 import EventsScreen from '../screens/EventsScreen';
+import MessagesScreen from '../screens/MessagesScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -172,7 +173,7 @@ const EventsStack = () => (
 
 const MessagesStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MessagesMain" component={Messages} />
+    <Stack.Screen name="MessagesMain" component={MessagesScreen} />
     <Stack.Screen 
       name="Chat" 
       component={ChatScreen}

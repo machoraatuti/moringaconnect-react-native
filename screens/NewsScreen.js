@@ -1,45 +1,52 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const NewsScreen = () => {
+  const navigation = useNavigation();
+
+  const newsItems = [
+    {
+      id: 1,
+      image: require('../assets/images/frontend.jpg'),
+      title: 'Tech Innovation 2024',
+      content: 'Last year was a landmark for software development and tech innovation. Key highlights included the rise of AI-driven tools like GitHub Copilot, revolutionizing coding efficiency.',
+      fullContent: 'Extended version of the news article...'
+    },
+    {
+      id: 2,
+      image: require('../assets/images/cybersecurity.jpg'),
+      title: 'AI Innovation Hub Launch',
+      content: 'We launched an AI startup innovation hub, where cutting-edge technology meets creativity. Our mission is to empower aspiring innovators, solve real-world problems, and drive the future of AI-driven solutions.',
+      fullContent: 'Extended version of the news article...'
+    }
+  ];
+
+  const renderNewsItem = (item) => (
+    <View key={item.id} style={styles.newsItem}>
+      <Image
+        source={item.image}
+        style={styles.newsImage}
+      />
+      <Text style={styles.newsTitle}>{item.title}</Text>
+      <Text style={styles.newsText}>{item.content}</Text>
+      <TouchableOpacity 
+        style={styles.readMoreButton}
+        onPress={() => navigation.navigate('NewsDetails', { news: item })}
+      >
+        <Text style={styles.readMoreText}>Read More</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      {/* Header with title */}
       <View style={styles.header}>
         <Text style={styles.headerText}>News</Text>
       </View>
 
-      {/* News Content */}
       <ScrollView style={styles.newsContent}>
-        {/* First news item */}
-        <View style={styles.newsItem}>
-          <Image
-            source={{ uri: 'https://your-image-url-1.com' }}  // Replace with actual image URL
-            style={styles.newsImage}
-          />
-          <Text style={styles.newsText}>
-            "Last year was a landmark for software development and tech innovation. Key highlights
-            included the rise of AI-driven tools like GitHub Copilot, revolutionizing coding efficiency."
-          </Text>
-          <TouchableOpacity style={styles.readMoreButton}>
-            <Text style={styles.readMoreText}>Read More</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Second news item */}
-        <View style={styles.newsItem}>
-          <Image
-            source={{ uri: 'https://your-image-url-2.com' }}  // Replace with actual image URL
-            style={styles.newsImage}
-          />
-          <Text style={styles.newsText}>
-            "We launched an AI startup innovation hub, where cutting-edge technology meets creativity.
-            Our mission is to empower aspiring innovators, solve real-world problems, and drive the future of AI-driven solutions."
-          </Text>
-          <TouchableOpacity style={styles.readMoreButton}>
-            <Text style={styles.readMoreText}>Read More</Text>
-          </TouchableOpacity>
-        </View>
+        {newsItems.map(item => renderNewsItem(item))}
       </ScrollView>
     </View>
   );
@@ -66,10 +73,15 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   newsItem: {
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    paddingBottom: 15,
+    marginVertical: 15,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    padding: 15,
   },
   newsImage: {
     width: '100%',
@@ -77,13 +89,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
+  newsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
   newsText: {
     fontSize: 16,
     color: '#333',
     marginBottom: 10,
+    lineHeight: 24,
   },
   readMoreButton: {
     alignSelf: 'flex-start',
+    paddingVertical: 5,
   },
   readMoreText: {
     color: '#FF7F32',

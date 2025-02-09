@@ -7,13 +7,14 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  Share,
-  Linking
+  Share
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const JobDetailsScreen = ({ route, navigation }) => {
-  const job = route.params?.job || {
+  const { job = {} } = route.params || {};
+
+  const defaultJob = {
     id: 1,
     position: 'Swift Developer Intern',
     company: 'Apple Inc.',
@@ -27,51 +28,38 @@ const JobDetailsScreen = ({ route, navigation }) => {
       role: 'Senior iOS Developer',
       image: require('../assets/images/avatar-dir-1.jpeg')
     },
-    description: 'We are looking for a passionate Swift Developer Intern to join our iOS development team. You will work on exciting projects and learn from experienced developers.',
+    description: 'We are looking for a passionate Swift Developer Intern to join our iOS development team.',
     requirements: [
-      'Currently pursuing or recently completed a degree in Computer Science or related field',
+      'Currently pursuing or recently completed a degree in Computer Science',
       'Basic knowledge of Swift programming language',
-      'Understanding of iOS development principles',
-      'Strong problem-solving skills',
-      'Good communication skills',
-      'Ability to work in a team'
+      'Understanding of iOS development principles'
     ],
     responsibilities: [
       'Assist in developing and maintaining iOS applications',
       'Write clean, maintainable code',
-      'Collaborate with the development team',
-      'Participate in code reviews',
-      'Debug and fix issues',
-      'Document technical specifications'
+      'Collaborate with the development team'
     ],
     benefits: [
       'Competitive internship stipend',
       'Mentorship from senior developers',
-      'Flexible working hours',
-      'Learning and development opportunities',
-      'Possibility of full-time employment',
-      'Modern work equipment provided'
+      'Flexible working hours'
     ]
   };
+
+  const jobData = { ...defaultJob, ...job };
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out this job opportunity: ${job.position} at ${job.company}`,
+        message: `Check out this job opportunity: ${jobData.position} at ${jobData.company}`,
       });
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  const handleApply = () => {
-    // Handle job application
-    console.log('Applying for job:', job.id);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#FFF" />
@@ -83,41 +71,38 @@ const JobDetailsScreen = ({ route, navigation }) => {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Job Header Info */}
         <View style={styles.jobHeader}>
-          <Text style={styles.position}>{job.position}</Text>
-          <Text style={styles.company}>{job.company}</Text>
+          <Text style={styles.position}>{jobData.position}</Text>
+          <Text style={styles.company}>{jobData.company}</Text>
           
           <View style={styles.locationContainer}>
             <Ionicons name="location-outline" size={16} color="#666" />
-            <Text style={styles.location}>{job.location}</Text>
+            <Text style={styles.location}>{jobData.location}</Text>
           </View>
 
-          {/* Quick Info Cards */}
           <View style={styles.quickInfoContainer}>
             <View style={styles.infoCard}>
               <Ionicons name="cash-outline" size={20} color="#E67E4D" />
-              <Text style={styles.infoText}>{job.salary}</Text>
+              <Text style={styles.infoText}>{jobData.salary}</Text>
             </View>
             <View style={styles.infoCard}>
               <Ionicons name="time-outline" size={20} color="#E67E4D" />
-              <Text style={styles.infoText}>{job.type}</Text>
+              <Text style={styles.infoText}>{jobData.type}</Text>
             </View>
             <View style={styles.infoCard}>
               <Ionicons name="briefcase-outline" size={20} color="#E67E4D" />
-              <Text style={styles.infoText}>{job.experience}</Text>
+              <Text style={styles.infoText}>{jobData.experience}</Text>
             </View>
           </View>
         </View>
 
-        {/* Posted By */}
         <View style={styles.postedBySection}>
           <View style={styles.postedByInfo}>
-            <Image source={job.postedBy.image} style={styles.posterImage} />
+            <Image source={jobData.postedBy.image} style={styles.posterImage} />
             <View style={styles.posterDetails}>
-              <Text style={styles.posterName}>Posted by {job.postedBy.name}</Text>
-              <Text style={styles.posterRole}>{job.postedBy.role}</Text>
-              <Text style={styles.timePosted}>{job.posted} ago</Text>
+              <Text style={styles.posterName}>Posted by {jobData.postedBy.name}</Text>
+              <Text style={styles.posterRole}>{jobData.postedBy.role}</Text>
+              <Text style={styles.timePosted}>{jobData.posted} ago</Text>
             </View>
           </View>
           <TouchableOpacity style={styles.messageButton}>
@@ -125,16 +110,14 @@ const JobDetailsScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Job Description */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Job Description</Text>
-          <Text style={styles.descriptionText}>{job.description}</Text>
+          <Text style={styles.descriptionText}>{jobData.description}</Text>
         </View>
 
-        {/* Requirements */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Requirements</Text>
-          {job.requirements.map((req, index) => (
+          {jobData.requirements?.map((req, index) => (
             <View key={index} style={styles.bulletPoint}>
               <Ionicons name="checkmark-circle" size={20} color="#E67E4D" />
               <Text style={styles.bulletText}>{req}</Text>
@@ -142,10 +125,9 @@ const JobDetailsScreen = ({ route, navigation }) => {
           ))}
         </View>
 
-        {/* Responsibilities */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Responsibilities</Text>
-          {job.responsibilities.map((resp, index) => (
+          {jobData.responsibilities?.map((resp, index) => (
             <View key={index} style={styles.bulletPoint}>
               <Ionicons name="arrow-forward-circle" size={20} color="#E67E4D" />
               <Text style={styles.bulletText}>{resp}</Text>
@@ -153,11 +135,10 @@ const JobDetailsScreen = ({ route, navigation }) => {
           ))}
         </View>
 
-        {/* Benefits */}
         <View style={[styles.section, styles.lastSection]}>
           <Text style={styles.sectionTitle}>Benefits</Text>
           <View style={styles.benefitsGrid}>
-            {job.benefits.map((benefit, index) => (
+            {jobData.benefits?.map((benefit, index) => (
               <View key={index} style={styles.benefitItem}>
                 <Ionicons name="gift-outline" size={24} color="#E67E4D" />
                 <Text style={styles.benefitText}>{benefit}</Text>
@@ -167,9 +148,8 @@ const JobDetailsScreen = ({ route, navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Apply Button */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+        <TouchableOpacity style={styles.applyButton}>
           <Text style={styles.applyButtonText}>Apply Now</Text>
         </TouchableOpacity>
       </View>

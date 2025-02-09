@@ -10,8 +10,11 @@ import {
   TextInput
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const CommunityGroupsScreen = () => {
+  const navigation = useNavigation();
+  
   const groups = [
     {
       id: 1,
@@ -22,6 +25,7 @@ const CommunityGroupsScreen = () => {
       },
       date: 'Nov 22,2023',
       members: 10,
+      description: 'A community of software developers sharing knowledge and experiences',
       image: require('../assets/images/avatar-dir-1.jpeg'),
       unreadCount: 0
     },
@@ -34,6 +38,7 @@ const CommunityGroupsScreen = () => {
       },
       date: 'Nov 21,2023',
       members: 16,
+      description: 'Planning and coordination for homecoming events',
       image: require('../assets/images/avatar-dir-2.jpeg'),
       unreadCount: 1
     },
@@ -46,6 +51,7 @@ const CommunityGroupsScreen = () => {
       },
       date: 'Nov 21,2023',
       members: 22,
+      description: 'Discussions about latest technology trends and innovations',
       image: require('../assets/images/avatar-dir-3.jpeg'),
       unreadCount: 0
     },
@@ -58,13 +64,18 @@ const CommunityGroupsScreen = () => {
       },
       date: 'Nov 21,2023',
       members: 12,
+      description: 'Computer science and hardware discussions',
       image: require('../assets/images/avatar-dir-4.jpeg'),
       unreadCount: 1
     }
   ];
 
   const renderGroup = (group) => (
-    <TouchableOpacity key={group.id} style={styles.groupItem}>
+    <TouchableOpacity 
+      key={group.id} 
+      style={styles.groupItem}
+      onPress={() => navigation.navigate('GroupDetails', { group })}
+    >
       <Image source={group.image} style={styles.groupImage} />
       <View style={styles.groupInfo}>
         <View style={styles.groupHeader}>
@@ -88,7 +99,6 @@ const CommunityGroupsScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
           <Ionicons name="menu" size={28} color="#000" />
@@ -102,7 +112,6 @@ const CommunityGroupsScreen = () => {
         </View>
       </View>
 
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#666" />
         <TextInput
@@ -112,12 +121,10 @@ const CommunityGroupsScreen = () => {
         />
       </View>
 
-      {/* Groups List */}
       <ScrollView style={styles.groupsList}>
         {groups.map(group => renderGroup(group))}
       </ScrollView>
 
-      {/* New Group Button */}
       <TouchableOpacity style={styles.newGroupButton}>
         <Text style={styles.newGroupText}>New Group</Text>
       </TouchableOpacity>

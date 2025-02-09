@@ -10,11 +10,12 @@ import {
   TextInput
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const ConnectionsScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigation = useNavigation();
   
-  // Mock connections data
   const connections = [
     {
       id: 1,
@@ -69,7 +70,11 @@ const ConnectionsScreen = () => {
   ];
 
   const renderConnection = (connection) => (
-    <TouchableOpacity key={connection.id} style={styles.connectionCard}>
+    <TouchableOpacity 
+      key={connection.id} 
+      style={styles.connectionCard}
+      onPress={() => navigation.navigate('ConnectionProfile', { connection })}
+    >
       <Image source={connection.image} style={styles.profileImage} />
       <View style={styles.connectionInfo}>
         <Text style={styles.name}>{connection.name}</Text>
@@ -102,7 +107,6 @@ const ConnectionsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#666" />
         <TextInput
@@ -114,7 +118,6 @@ const ConnectionsScreen = () => {
         />
       </View>
 
-      {/* Stats Section */}
       <View style={styles.statsSection}>
         <View style={styles.statItem}>
           <Text style={styles.statNumber}>60</Text>
@@ -130,12 +133,10 @@ const ConnectionsScreen = () => {
         </View>
       </View>
 
-      {/* Connections List */}
       <ScrollView style={styles.connectionsList}>
         {connections.map(connection => renderConnection(connection))}
       </ScrollView>
 
-      {/* Add Connection Button */}
       <TouchableOpacity style={styles.addButton}>
         <Ionicons name="person-add" size={24} color="#FFF" />
       </TouchableOpacity>
