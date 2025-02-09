@@ -91,7 +91,7 @@ const FeedStack = () => (
       component={FeedDetails}
       options={{
         headerShown: true,
-        headerStyle: { backgroundColor: '#E67E4D' },
+        headerStyle: { backgroundColor: "rgba(10, 31, 68, 0.8)" },
         headerTintColor: '#fff'
       }}
     />
@@ -105,7 +105,7 @@ const JobBoardStack = () => (
       name="JobDetails" 
       component={JobDetails}
       options={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: { backgroundColor: '#E67E4D' },
         headerTintColor: '#fff'
       }}
@@ -120,7 +120,7 @@ const MentorshipStack = () => (
       name="MentorProfile" 
       component={MentorProfile}
       options={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: { backgroundColor: '#E67E4D' },
         headerTintColor: '#fff'
       }}
@@ -135,7 +135,7 @@ const NewsStack = () => (
       name="NewsDetails" 
       component={NewsDetails}
       options={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: { backgroundColor: '#E67E4D' },
         headerTintColor: '#fff'
       }}
@@ -150,7 +150,7 @@ const GroupsStack = () => (
       name="GroupDetails" 
       component={GroupDetails}
       options={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: { backgroundColor: '#E67E4D' },
         headerTintColor: '#fff'
       }}
@@ -436,141 +436,118 @@ const MainComponent = () => {
 
   return (
     <Drawer.Navigator
-      id="RootDrawer"
-      initialRouteName="Main"
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={({ route, navigation }) => ({
-        headerStyle: { 
-          backgroundColor: '#E67E4D',
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-        headerTintColor: '#fff',
-        drawerStyle: { backgroundColor: '#FFF' },
-        drawerActiveTintColor: '#E67E4D',
-        headerLeft: () => (
-          <Icon
-            name="menu"
-            size={24}
-            color="white"
-            onPress={() => navigation.toggleDrawer()}
-            style={{ marginLeft: 10 }}
-          />
-        ),
-       headerRight: () => {
-  if (route.name === 'Main' && activeRouteName === 'Home') {
-    return (
-      <TouchableOpacity 
-        onPress={() => navigation.navigate('Notifications', { screen: 'NotificationsMain' })}
-        style={{ marginRight: 15 }}
-      >
-        <Icon 
-          name="bell" 
-          type="font-awesome" 
-          size={24} 
-          color="white" 
-        />
-      </TouchableOpacity>
-    );
-  }
-  return null;
-        }
-      })}
-    >
-      <Drawer.Screen name="Home"
-        component={BottomTabs}
-        options={{
-          title: activeRouteName,
-        }}
-        listeners={({ navigation }) => ({
-          state: (e) => {
-            if (e.data.state) {
-              const routes = e.data.state.routes;
-              const currentRoute = routes[e.data.state.index];
-              if (currentRoute) {
-                let newRouteName = currentRoute.name.replace('Tab', '');
-                setActiveRouteName(newRouteName);
-              }
-            }
-          },
-        })}
-      />
-      <Drawer.Screen 
-        name="Alumni Directory" 
-        component={AlumniStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="Connections" 
-        component={ConnectionsStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="Feed" 
-        component={FeedStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="JobBoard" 
-        component={JobBoardStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="Mentorship" 
-        component={MentorshipStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="NewsUpdates" 
-        component={NewsStack}
-        options={{
-          headerShown: true,
-          title: 'News & Updates'
-        }}
-      />
-      <Drawer.Screen 
-        name="Groups" 
-        component={GroupsStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="Events" 
-        component={EventsStack}
-        options={{
-          headerShown: true
-        }}
-      />
-      <Drawer.Screen 
-        name="Settings" 
-        component={SettingsStack}
-        options={{
-          headerShown: true
-        }}
-      />
+ id="RootDrawer"
+ initialRouteName="Main"
+ drawerContent={(props) => <CustomDrawerContent {...props} />}
+ screenOptions={({ route, navigation }) => ({
+   // Added headerShown: false globally to hide header on all screens
+   headerShown: true,
+   headerStyle: { 
+     backgroundColor: '#E67E4D',
+     elevation: 0,
+     shadowOpacity: 0,
+   },
+   headerTintColor: '#fff',
+   drawerStyle: { backgroundColor: '#FFF' },
+   drawerActiveTintColor: '#E67E4D',
+   headerLeft: () => (
+     <Icon
+       name="menu"
+       size={24}
+       color="white"
+       onPress={() => navigation.toggleDrawer()}
+       style={{ marginLeft: 10 }}
+     />
+   ),
+   headerRight: () => {
+     if (route.name === 'Main' && activeRouteName === 'Home') {
+       return (
+         <TouchableOpacity 
+           onPress={() => navigation.navigate('Notifications', { screen: 'NotificationsMain' })}
+           style={{ marginRight: 15 }}
+         >
+           <Icon 
+             name="bell" 
+             type="font-awesome" 
+             size={24} 
+             color="white" 
+           />
+         </TouchableOpacity>
+       );
+     }
+     return null;
+   }
+ })}
+>
+ {/* Removed headerShown from all screens since it's handled in screenOptions */}
+ <Drawer.Screen name="Home"
+   component={BottomTabs}
+   options={{
+     title: "",
+   }}
+   listeners={({ navigation }) => ({
+     state: (e) => {
+       if (e.data.state) {
+         const routes = e.data.state.routes;
+         const currentRoute = routes[e.data.state.index];
+         if (currentRoute) {
+           let newRouteName = currentRoute.name.replace('Tab', '');
+           setActiveRouteName(newRouteName);
+         }
+       }
+     },
+   })}
+ />
+ <Drawer.Screen 
+   name="Alumni Directory" 
+   component={AlumniStack}
+ />
+ <Drawer.Screen 
+   name="Connections" 
+   component={ConnectionsStack}
+ />
+ <Drawer.Screen 
+   name="Feed" 
+   component={FeedStack}
+ />
+ <Drawer.Screen 
+   name="JobBoard" 
+   component={JobBoardStack}
+ />
+ <Drawer.Screen 
+   name="Mentorship" 
+   component={MentorshipStack}
+ />
+ <Drawer.Screen 
+   name="NewsUpdates" 
+   component={NewsStack}
+   options={{
+     title: 'News & Updates'
+   }}
+ />
+ <Drawer.Screen 
+   name="Groups" 
+   component={GroupsStack}
+ />
+ <Drawer.Screen 
+   name="Events" 
+   component={EventsStack}
+ />
+ <Drawer.Screen 
+   name="Settings" 
+   component={SettingsStack}
+ />
 
-      {isAdmin && (
-        <Drawer.Screen
-          name="Admin"
-          component={AdminStack}
-          options={{
-            title: 'Admin Dashboard',
-            headerShown: true
-          }}
-        />
-      )}
-    </Drawer.Navigator>
+ {isAdmin && (
+   <Drawer.Screen
+     name="Admin"
+     component={AdminStack}
+     options={{
+       title: 'Admin Dashboard'
+     }}
+   />
+ )}
+</Drawer.Navigator>
   );
 };
 

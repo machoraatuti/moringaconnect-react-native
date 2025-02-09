@@ -60,10 +60,11 @@ We believe this hub will play a crucial role in fostering the next generation of
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" type="ionicon" color="#000" size={24} />
+          <Icon name="arrow-back" type="ionicon" color="#fff" size={24} />
         </TouchableOpacity>
+         <Text style={styles.headerTitle}>News Details</Text>
         <TouchableOpacity onPress={handleShare}>
-          <Icon name="share" type="ionicon" color="#000" size={24} />
+          <Icon name="share" type="ionicon" color="#fff" size={24} />
         </TouchableOpacity>
       </View>
 
@@ -165,7 +166,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+     backgroundColor: "rgba(10, 31, 68, 0.8)",
   },
+     
+
+  
   content: {
     flex: 1,
   },

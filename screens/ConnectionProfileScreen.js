@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#E67E4D',
+    backgroundColor: '(rgba(10, 31, 68, 0.8))',
   },
   headerTitle: {
     fontSize: 20,

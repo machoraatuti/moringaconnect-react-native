@@ -9,7 +9,8 @@ const colors = {
   primary: "#0A1F44",
   secondary: "#F05A28", 
   background: "#FFF5F2",
-  white: "#FFFFFF",
+  blue: "(rgba(10, 31, 68, 0.8))",
+  white: "#FFFF",
   textGray: "#666666",
   borderColor: "#E0E0E0"
 };
@@ -190,14 +191,14 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.blue,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderColor,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.white,
   },
   profileSection: {
     padding: 16,
