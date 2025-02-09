@@ -7,12 +7,11 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  Linking
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const ConnectionProfileScreen = ({ route, navigation }) => {
-  const connection = route.params?.connection || {
+  const { connection = {
     id: 1,
     name: 'Sarah Kimani',
     role: 'Software Engineer',
@@ -21,7 +20,7 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
     location: 'Nairobi, Kenya',
     image: require('../assets/images/avatar-dir-1.jpeg'),
     mutual: 15,
-    bio: 'Passionate software engineer with expertise in full-stack development. Graduated from Moringa School and currently working on exciting projects at Google.',
+    bio: 'Passionate software engineer with expertise in full-stack development.',
     skills: ['React Native', 'Node.js', 'Python', 'AWS', 'MongoDB'],
     experience: [
       {
@@ -29,12 +28,6 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
         company: 'Google',
         duration: '2022 - Present',
         location: 'Nairobi, Kenya'
-      },
-      {
-        role: 'Software Developer Intern',
-        company: 'Microsoft',
-        duration: '2021 - 2022',
-        location: 'Remote'
       }
     ],
     education: {
@@ -42,39 +35,11 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
       course: 'Software Engineering',
       year: '2022'
     },
-    // Mock mutual connections data
-    mutualConnections: [
-      {
-        id: 2,
-        name: 'John Mwangi',
-        image: require('../assets/images/avatar-dir-2.jpeg'),
-      },
-      {
-        id: 3,
-        name: 'Alice Njeri',
-        image: require('../assets/images/avatar-dir-3.jpeg'),
-      },
-      {
-        id: 4,
-        name: 'Mike Omondi',
-        image: require('../assets/images/avatar-dir-4.jpeg'),
-      }
-    ]
-  };
-
-  const handleConnect = () => {
-    // Handle connection request
-    console.log('Connection request sent');
-  };
-
-  const handleMessage = () => {
-    // Navigate to chat screen
-    navigation.navigate('Chat', { connection });
-  };
+    mutualConnections: []
+  }} = route.params || {};
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#FFF" />
@@ -86,7 +51,6 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Profile Header */}
         <View style={styles.profileHeader}>
           <Image source={connection.image} style={styles.profileImage} />
           <Text style={styles.name}>{connection.name}</Text>
@@ -99,28 +63,26 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
           </View>
 
           <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.messageButton} onPress={handleMessage}>
+            <TouchableOpacity style={styles.messageButton}>
               <Ionicons name="chatbubble-outline" size={20} color="#FFF" />
               <Text style={styles.buttonText}>Message</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.connectButton} onPress={handleConnect}>
+            <TouchableOpacity style={styles.connectButton}>
               <Ionicons name="person-add-outline" size={20} color="#FFF" />
               <Text style={styles.buttonText}>Connect</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* About Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
           <Text style={styles.bioText}>{connection.bio}</Text>
         </View>
 
-        {/* Skills Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Skills</Text>
           <View style={styles.skillsContainer}>
-            {connection.skills.map((skill, index) => (
+            {connection.skills?.map((skill, index) => (
               <View key={index} style={styles.skillBadge}>
                 <Text style={styles.skillText}>{skill}</Text>
               </View>
@@ -128,10 +90,9 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
           </View>
         </View>
 
-        {/* Experience Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Experience</Text>
-          {connection.experience.map((exp, index) => (
+          {connection.experience?.map((exp, index) => (
             <View key={index} style={styles.experienceItem}>
               <View style={styles.companyIcon}>
                 <Ionicons name="briefcase-outline" size={24} color="#E67E4D" />
@@ -146,34 +107,31 @@ const ConnectionProfileScreen = ({ route, navigation }) => {
           ))}
         </View>
 
-        {/* Education Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Education</Text>
-          <View style={styles.educationItem}>
-            <View style={styles.educationIcon}>
-              <Ionicons name="school-outline" size={24} color="#E67E4D" />
+          {connection.education && (
+            <View style={styles.educationItem}>
+              <View style={styles.educationIcon}>
+                <Ionicons name="school-outline" size={24} color="#E67E4D" />
+              </View>
+              <View style={styles.educationInfo}>
+                <Text style={styles.institutionName}>{connection.education.institution}</Text>
+                <Text style={styles.courseName}>{connection.education.course}</Text>
+                <Text style={styles.graduationYear}>Class of {connection.education.year}</Text>
+              </View>
             </View>
-            <View style={styles.educationInfo}>
-              <Text style={styles.institutionName}>{connection.education.institution}</Text>
-              <Text style={styles.courseName}>{connection.education.course}</Text>
-              <Text style={styles.graduationYear}>Class of {connection.education.year}</Text>
-            </View>
-          </View>
+          )}
         </View>
 
-        {/* Mutual Connections */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Mutual Connections ({connection.mutual})</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mutualsList}>
-            {connection.mutualConnections.map((mutual) => (
+            {connection.mutualConnections?.map((mutual) => (
               <TouchableOpacity key={mutual.id} style={styles.mutualItem}>
                 <Image source={mutual.image} style={styles.mutualImage} />
                 <Text style={styles.mutualName}>{mutual.name}</Text>
               </TouchableOpacity>
             ))}
-            <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
-            </TouchableOpacity>
           </ScrollView>
         </View>
       </ScrollView>
@@ -379,15 +337,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
-  },
-  viewAllButton: {
-    justifyContent: 'center',
-  },
-  viewAllText: {
-    color: '#E67E4D',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  }
 });
 
 export default ConnectionProfileScreen;

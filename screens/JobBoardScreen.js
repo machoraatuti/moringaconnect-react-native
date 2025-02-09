@@ -11,73 +11,79 @@ import {
   Linking
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-
-// Mock job data
-const jobListings = [
-  {
-    id: 1,
-    position: 'Swift Developer Intern',
-    company: 'Apple Inc.',
-    location: 'Nairobi, Kenya',
-    posted: '1hr',
-    postedBy: {
-      name: 'Sarah Kimani',
-      image: require('../assets/images/avatar-dir-1.jpeg')
-    }
-  },
-  {
-    id: 2,
-    position: 'UI/UX Designer',
-    company: 'Microsoft',
-    location: 'Remote',
-    posted: '1hr',
-    postedBy: {
-      name: 'Jimmy',
-      image: require('../assets/images/avatar-dir-2.jpeg')
-    }
-  },
-  {
-    id: 3,
-    position: 'Java Developer',
-    company: 'Safaricom',
-    location: 'Nairobi, Kenya',
-    posted: '1hr',
-    postedBy: {
-      name: 'Ethan',
-      image: require('../assets/images/avatar-dir-3.jpeg')
-    }
-  },
-  {
-    id: 4,
-    position: 'Python Developer Intern',
-    company: 'Google',
-    location: 'Remote',
-    posted: '1hr',
-    postedBy: {
-      name: 'mishael',
-      image: require('../assets/images/avatar-dir-4.jpeg')
-    }
-  },
-  {
-    id: 5,
-    position: 'C++ Developer Intern',
-    company: 'Intel',
-    location: 'Mombasa, Kenya',
-    posted: '1hr',
-    postedBy: {
-      name: 'vinter',
-      image: require('../assets/images/avatar-dir-5.jpeg')
-    }
-  }
-];
+import { useNavigation } from '@react-navigation/native';
 
 const JobBoardScreen = () => {
+  const navigation = useNavigation();
+  
+  const jobListings = [
+    {
+      id: 1,
+      position: 'Swift Developer Intern',
+      company: 'Apple Inc.',
+      location: 'Nairobi, Kenya',
+      posted: '1hr',
+      postedBy: {
+        name: 'Sarah Kimani',
+        image: require('../assets/images/avatar-dir-1.jpeg')
+      }
+    },
+    {
+      id: 2,
+      position: 'UI/UX Designer',
+      company: 'Microsoft',
+      location: 'Remote',
+      posted: '1hr',
+      postedBy: {
+        name: 'Jimmy',
+        image: require('../assets/images/avatar-dir-2.jpeg')
+      }
+    },
+    {
+      id: 3,
+      position: 'Java Developer',
+      company: 'Safaricom',
+      location: 'Nairobi, Kenya',
+      posted: '1hr',
+      postedBy: {
+        name: 'Ethan',
+        image: require('../assets/images/avatar-dir-3.jpeg')
+      }
+    },
+    {
+      id: 4,
+      position: 'Python Developer Intern',
+      company: 'Google',
+      location: 'Remote',
+      posted: '1hr',
+      postedBy: {
+        name: 'mishael',
+        image: require('../assets/images/avatar-dir-4.jpeg')
+      }
+    },
+    {
+      id: 5,
+      position: 'C++ Developer Intern',
+      company: 'Intel',
+      location: 'Mombasa, Kenya',
+      posted: '1hr',
+      postedBy: {
+        name: 'vinter',
+        image: require('../assets/images/avatar-dir-5.jpeg')
+      }
+    }
+  ];
+
   const handleCareerMentorship = () => {
     Linking.openURL('mailto:careers@moringaschool.com');
   };
 
   const renderJobItem = (job) => (
-    <TouchableOpacity key={job.id} style={styles.jobItem}>
+    <TouchableOpacity 
+      key={job.id} 
+      style={styles.jobItem}
+      onPress={() => navigation.navigate('JobDetails', { job })}
+    >
       <Image source={job.postedBy.image} style={styles.profileImage} />
       <View style={styles.jobInfo}>
         <Text style={styles.jobTitle}>Opening for {job.position}</Text>
@@ -95,7 +101,6 @@ const JobBoardScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity>
           {/* <Ionicons name="menu" size={28} color="#000" /> */}
@@ -103,7 +108,6 @@ const JobBoardScreen = () => {
         <Text style={styles.headerTitle}>Job Board & Career Support</Text>
       </View>
 
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
         <TextInput
@@ -113,14 +117,11 @@ const JobBoardScreen = () => {
         />
       </View>
 
-      {/* Content */}
       <ScrollView style={styles.content}>
         <Text style={styles.sectionTitle}>Recently Posted by Alumni's</Text>
         
-        {/* Job Listings */}
         {jobListings.map(job => renderJobItem(job))}
 
-        {/* Career Mentorship Section */}
         <View style={styles.mentorshipSection}>
           <Text style={styles.mentorshipTitle}>Need Career Guidance?</Text>
           <Text style={styles.mentorshipText}>

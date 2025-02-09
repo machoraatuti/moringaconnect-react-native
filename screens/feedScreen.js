@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const FeedScreen = () => {
+  const navigation = useNavigation();
+  
   const posts = [
     {
       id: 1,
@@ -24,7 +27,11 @@ const FeedScreen = () => {
   ];
 
   const renderPost = (post) => (
-    <View key={post.id} style={styles.postContainer}>
+    <TouchableOpacity 
+      key={post.id} 
+      style={styles.postContainer}
+      onPress={() => navigation.navigate('FeedDetails', { post })}
+    >
       <View style={styles.postHeader}>
         <Image
           source={require('../assets/images/frontend.jpg')}
@@ -58,7 +65,7 @@ const FeedScreen = () => {
           <Text style={styles.actionText}>Share</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

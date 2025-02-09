@@ -175,7 +175,7 @@ const EventsStack = () => (
 
 const MessagesStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MessagesMain" component={Messages} />
+    <Stack.Screen name="MessagesMain" component={MessagesScreen} />
     <Stack.Screen 
       name="Chat" 
       component={ChatScreen}
