@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    backgroundColor: "rgba(10, 31, 68, 0.8)",
   },
   headerTitle: {
     fontSize: 18,

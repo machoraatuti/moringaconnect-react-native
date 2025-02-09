@@ -82,26 +82,7 @@ const FeedScreen = () => {
         {posts.map(post => renderPost(post))}
       </ScrollView>
 
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="people" size={24} color="#666" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="search" size={24} color="#666" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="calendar" size={24} color="#666" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Image
-            source={require('../assets/images/avatar-dir-1.jpeg')}
-            style={styles.navProfile}
-          />
-        </TouchableOpacity>
-      </View>
+     
     </SafeAreaView>
   );
 };
@@ -138,6 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
+    
   },
   profileImage: {
     width: 48,

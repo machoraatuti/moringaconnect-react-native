@@ -121,9 +121,8 @@ const GroupDetailsScreen = ({ route, navigation }) => {
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Group Details</Text>
-        <TouchableOpacity>
-          <Ionicons name="settings-outline" size={24} color="#000" />
-        </TouchableOpacity>
+         <View style={{width: 24}} /> 
+       
       </View>
 
       <ScrollView style={styles.content}>
@@ -199,10 +198,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+     backgroundColor: "rgba(10, 31, 68, 0.8)",
+      width: '100%'
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: "#fff",
+   
   },
   content: {
     flex: 1,
