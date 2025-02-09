@@ -180,7 +180,7 @@ const GroupDetailsScreen = ({ route, navigation }) => {
 
       {/* Leave Group Button */}
       <TouchableOpacity style={styles.leaveButton}>
-        <Ionicons name="exit-outline" size={20} color="#F44336" />
+        <Ionicons name="exit-outline" size={20} color="#FFF" />
         <Text style={styles.leaveButtonText}>Leave Group</Text>
       </TouchableOpacity>
     </SafeAreaView>
