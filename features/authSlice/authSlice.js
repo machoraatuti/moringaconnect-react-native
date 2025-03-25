@@ -1,224 +1,100 @@
+// Modified authSlice.js to provide a mock user without authentication
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { baseUrl } from '../../shared/baseUrl';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const AUTH_ENDPOINTS = {
-  LOGIN: 'login',
-  REGISTER: 'users',
-  VERIFY: 'verify-token',
-  REFRESH: 'refresh-token'
+// Mock user data
+const mockUser = {
+  id: 'mock-user-001',
+  username: 'demouser',
+  email: 'demo@example.com',
+  fullName: 'Demo User',
+  role: 'user', // Change to 'admin' if you want admin access
+  // Add any other user properties your app requires
 };
 
-// Predetermined admin emails
-const ADMIN_EMAILS = [
-  'admin@moringa.com',
-  'director@moringa.com'
-];
-
-const handleAuthResponse = async (response) => {
-  const data = await response.json();
-  
-  if (!response.ok) {
-    console.error('Auth error:', response.status, data);
-    throw new Error(data.message || `Error ${response.status}: ${data.error || 'Authentication failed'}`);
-  }
-
-  if (!data.token || !data.user) {
-    console.error('Invalid response:', data);
-    throw new Error('Invalid response: missing token or user data');
-  }
-
-  await AsyncStorage.multiSet([
-    ['token', data.token],
-    ['user', JSON.stringify(data.user)]
-  ]);
-  
-  return data;
-};
-
-const loginUser = createAsyncThunk(
-  'auth/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const response = await fetch(baseUrl + AUTH_ENDPOINTS.LOGIN, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(credentials)
-      });
-      return await handleAuthResponse(response);
-    } catch (error) {
-      console.error('Login error:', error);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-const registerUser = createAsyncThunk(
-  'auth/register',
-  async (userData, { rejectWithValue }) => {
-    try {
-      // Check if the email is in the predetermined admin list
-      const isDefaultAdmin = ADMIN_EMAILS.includes(userData.email.toLowerCase());
-
-      const response = await fetch(baseUrl + AUTH_ENDPOINTS.REGISTER, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ 
-          ...userData, 
-          role: isDefaultAdmin ? 'admin' : 'user',
-          email: userData.email.toLowerCase() // Ensure email is lowercase
-        })
-      });
-      return await handleAuthResponse(response);
-    } catch (error) {
-      console.error('Registration error:', error);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-const checkAuthToken = createAsyncThunk(
-  'auth/checkToken',
-  async (_, { rejectWithValue }) => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const userData = await AsyncStorage.getItem('user');
-      
-      if (!token || !userData) {
-        return rejectWithValue('No stored credentials');
-      }
-
-      const response = await fetch(baseUrl + AUTH_ENDPOINTS.VERIFY, {
-        method: 'GET',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        await AsyncStorage.multiRemove(['token', 'user']);
-        const data = await response.json();
-        return rejectWithValue(data.message || 'Token validation failed');
-      }
-
-      return {
-        user: JSON.parse(userData),
-        token
-      };
-
-    } catch (error) {
-      console.error('Token verification error:', error);
-      await AsyncStorage.multiRemove(['token', 'user']);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      await AsyncStorage.multiRemove(['token', 'user']);
-      return true;
-    } catch (error) {
-      console.error('Logout error:', error);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
+// Initial state with the mock user already logged in
 const initialState = {
-  user: null,
-  token: null,
-  isLoading: true,
-  error: null,
-  isAuthenticated: false,
-  isAdmin: false
+  user: mockUser,
+  token: 'mock-token-12345',
+  isLoading: false,
+  isSuccess: true,
+  isError: false,
+  message: '',
 };
 
+// Keep the original thunks for API compatibility, but they won't be used
+export const checkAuthToken = createAsyncThunk(
+  'auth/checkToken',
+  async (_, thunkAPI) => {
+    try {
+      // Always return success with the mock user
+      return { user: mockUser };
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Authentication failed');
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk(
+  'auth/logout',
+  async (_, thunkAPI) => {
+    try {
+      // For development purposes, we'll just return success
+      return { success: true };
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Logout failed');
+    }
+  }
+);
+
+// Auth slice with reducers
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
+    // Add any synchronous reducers if needed
+    reset: (state) => {
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = false;
+      state.message = '';
     },
-    setCredentials: (state, { payload }) => {
-      state.user = payload.user;
-      state.token = payload.token;
-      state.isAuthenticated = true;
-      state.isAdmin = payload.user.role === 'admin';
-    }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(logoutUser.fulfilled, (state) => {
-        Object.assign(state, initialState);
-      })
+      // checkAuthToken cases
       .addCase(checkAuthToken.pending, (state) => {
         state.isLoading = true;
-        state.error = null; 
       })
-      .addCase(checkAuthToken.fulfilled, (state, { payload }) => {
+      .addCase(checkAuthToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = payload.user;
-        state.token = payload.token;
-        state.isAuthenticated = true;
-        state.isAdmin = payload.user.role === 'admin';
+        state.isSuccess = true;
+        state.user = mockUser; // Always set mock user
       })
-      .addCase(checkAuthToken.rejected, (state, { payload }) => {
+      .addCase(checkAuthToken.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = payload;
-        state.isAuthenticated = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = mockUser; // For development, still set mock user
       })
-      .addMatcher(
-        (action) => action.type.endsWith('/pending') && 
-          !action.type.includes('checkAuthToken'),
-        (state) => {
-          state.isLoading = true;
-          state.error = null;
-        }
-      )
-      .addMatcher(
-        (action) => action.type.endsWith('/fulfilled') && 
-          !action.type.includes('checkAuthToken') &&
-          !action.type.includes('logout'),
-        (state, { payload }) => {
-          state.isLoading = false;
-          state.user = payload.user;
-          state.token = payload.token;
-          state.isAuthenticated = true;
-          state.isAdmin = payload.user.role === 'admin';
-        }
-      )
-      .addMatcher(
-        (action) => action.type.endsWith('/rejected') &&
-          !action.type.includes('checkAuthToken'),
-        (state, { payload }) => {
-          state.isLoading = false;
-          state.error = payload;
-        }
-      );
-  }
+      
+      // logoutUser cases
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // For development purposes, don't actually log out
+        // Uncomment the next line if you want logout to work
+        // state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      });
+  },
 });
 
-// Export thunks
-export {
-  loginUser,
-  registerUser,
-  checkAuthToken,
-  logoutUser
-};
-
-// Export actions
-export const { clearError, setCredentials } = authSlice.actions;
-
-// Export reducer
+export const { reset } = authSlice.actions;
 export default authSlice.reducer;
