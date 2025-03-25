@@ -11,6 +11,12 @@
       "image": "./assets/images/mac-final-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFE8E0"
+    },
+    "android": {
+      "package": "com.finch2000.moringaconnect"
+    },
+    "ios": {
+      "bundleIdentifier": "com.finch2000.moringaconnect"
     }
   }
 }
